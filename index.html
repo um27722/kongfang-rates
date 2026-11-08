@@ -52,6 +52,11 @@ select:focus-visible,button:focus-visible{outline:2px solid var(--pine);outline-
 .warn{background:var(--full-soft);color:var(--full);border-radius:8px;padding:8px 10px;font-size:.88rem;font-weight:500}
 .bank{margin-top:6px;background:var(--pine-soft);color:var(--pine);border-radius:8px;padding:8px 10px;font-size:.92rem}
 .ok{background:var(--pine-soft);color:var(--pine);border-radius:8px;padding:8px 10px;font-size:.88rem;font-weight:500}
+.upsell{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.upsell h3{font-family:var(--display);font-size:.95rem;margin:0}
+.up{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.88rem}
+.up b{color:var(--pine)}
+.copy.sm{font-size:.8rem;padding:5px 10px}
 .copy{align-self:flex-start;font:inherit;font-size:.88rem;padding:8px 14px;border-radius:8px;border:1px solid var(--pine);background:transparent;color:var(--pine);cursor:pointer;font-weight:600}
 textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--fg)}
 /* day list */
@@ -125,6 +130,19 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
     <p class="foot" style="margin:0">เดือน พ.ย. 2569 แพ็กเกจ All Inclusive ยังเป็น 16,900 ต่อคืน</p>
   </section>
 
+  <section class="card" aria-labelledby="sell-h">
+    <h2 id="sell-h">ขายเพิ่ม: เสนอทางเลือกทุกครั้ง</h2>
+    <ul class="rules">
+      <li><b>ทุกครั้งที่ส่งราคา ให้เสนอทางเลือกเพิ่มอย่างน้อย 1 อย่าง</b> ในช่องคิดราคามีปุ่มคัดลอกข้อความเสนอให้แล้ว</li>
+      <li><b>ลูกค้าพัก 1 คืน</b> → ชวนพัก 2 คืน (ลด 5% ทุกคืน) · <b>พัก 2 คืน</b> → ชวน 3 คืน (ลด 10% ทุกคืน)</li>
+      <li><b>คู่รัก / ฮันนีมูน / วันเกิด / ครบรอบ</b> → เสนออัปเกรดเป็น Sunset Pavilion</li>
+      <li><b>ลูกค้าไม่มีรถ หรือบินมาเชียงใหม่</b> → เสนอ All Inclusive (มีรับส่งสนามบิน + กิจกรรมวันละ 1 อย่าง) · เริ่ม 1 ธ.ค.</li>
+      <li><b>ลูกค้าถามเรื่องอาหาร / ไม่อยากออกไปหาร้าน</b> → เสนอ Full Board (อาหาร 3 มื้อ) · เริ่ม 1 ธ.ค.</li>
+      <li><b>ลูกค้าพร้อมโอนเต็มตอนจอง (ไม่คืนเงิน)</b> → ได้ส่วนลดอาหารและกิจกรรม 10% แทน 5%</li>
+      <li>ห้ามลดราคาห้องเองนอกจากนี้ ถ้าลูกค้าต่อราคา ให้เสนอพักเพิ่มหรือแพ็กเกจแทน หรือถามอั้ม</li>
+    </ul>
+  </section>
+
   <section class="card" aria-labelledby="calc-h">
     <h2 id="calc-h">คิดราคาให้ลูกค้า</h2>
     <div class="calc-grid">
@@ -195,6 +213,8 @@ function renderList(){
   document.getElementById("list").innerHTML = out.join("");
 }
 
+function totalFor(v,i,n){ let t=0; for(let k=0;k<n;k++){ const j=i+k; if(j>=N) return null; const b=rate(v,dayAt(j)); t+= n>=3? r3(b) : n===2? r2(b) : b; } return t; }
+const PKG = {FB:{M:8990,S:9990,name:"Full Board (อาหาร 3 มื้อ)"}, AI:{M:11900,S:13900,name:"All Inclusive + Activities (3 มื้อ + เครื่องดื่ม + กิจกรรมวันละ 1 อย่าง + รับส่งสนามบินเชียงใหม่)"}};
 let villa="M";
 function renderQuote(){
   const i=+document.getElementById("ci").value, n=+document.getElementById("nights").value;
@@ -212,10 +232,21 @@ function renderQuote(){
     : full.length? `<div class="warn">${NAME[villa]} เต็มคืนวันที่ ${full.join(", ")} รับจองไม่ได้ ลองอีกวิลล่าหรือวันอื่น</div>`
     : `<div class="ok">เช็คห้องว่าง ${NAME[villa]} ใน Little Hotelier ก่อนส่งราคาให้ลูกค้า</div>`;
   const msg = `Kongfang Wilderness Retreat\n${NAME[villa]} Villa · ${n} คืน\nเช็คอิน ${ci.getDate()} ${TH_MON[ci.getMonth()]} – เช็คเอาท์ ${co.getDate()} ${TH_MON[co.getMonth()]}\nรวม ${fmt(total)} บาท (รวมอาหารเช้า 2 ท่าน)\nยกเลิกฟรีก่อนวันเข้าพัก 7 วัน\n\nยืนยันการจอง: โอนมัดจำ 50% = ${fmt(Math.round(total/2))} บาท\nธนาคารกสิกรไทย\nชื่อบัญชี บริษัท เอ็นวี ออลล์ จำกัด\nเลขที่บัญชี 221-1-70170-9\nรบกวนส่งสลิปให้เราด้วยนะครับ · ส่วนที่เหลือชำระตอนเช็คเอาท์\n\n✨ จองตรงกับเรา: ราคาถูกที่สุด + ลด 5% ค่าอาหารและกิจกรรมตลอดการเข้าพัก`;
+  const ups=[]; const vName=NAME[villa];
+  if(!beyond){
+    const t1=totalFor(villa,i,n+1);
+    if(t1 && n<6){ const add=t1-total; ups.push({t:`พักเพิ่มอีก 1 คืน (${n+1} คืน) จ่ายเพิ่มแค่ <b>${fmt(add)}</b>`, m:`ถ้าพักเพิ่มอีก 1 คืน เป็น ${n+1} คืน รวม ${fmt(t1)} บาท จ่ายเพิ่มแค่ ${fmt(add)} บาทครับ${n+1===2?' (ได้ราคา 2 คืน ลด 5% ทุกคืน)':n+1===3?' (ได้ราคา 3 คืนขึ้นไป ลด 10% ทุกคืน)':''} จะได้มีเวลาพักผ่อนเต็มที่ ไม่ต้องรีบเช็คเอาท์ครับ 😊`}); }
+    if(villa==="M"){ const tS=totalFor("S",i,n); if(tS){ const add=tS-total; ups.push({t:`อัปเกรดเป็น Sunset Pavilion เพิ่ม <b>${fmt(add)}</b>`, m:`อีกทางเลือกนะครับ อัปเกรดเป็น Sunset Pavilion Villa วิลล่าวิวพระอาทิตย์ตก ${n} คืน รวม ${fmt(tS)} บาท เพิ่มจาก Mountain View แค่ ${fmt(add)} บาทครับ เหมาะกับโอกาสพิเศษมากครับ 🌅`}); } }
+    const pkgOK = ci >= new Date(2026,11,1);
+    if(pkgOK){ for(const k of ["FB","AI"]){ const P=PKG[k]; const tp=P[villa]*n; ups.push({t:`${k==="FB"?"Full Board":"All Inclusive"} ${n} คืน รวม <b>${fmt(tp)}</b> (เพิ่ม ${fmt(tp-total)})`, m:`ถ้าอยากสบาย ไม่ต้องคิดเรื่องอาหาร มีแพ็กเกจ ${P.name} ${vName} Villa ${n} คืน รวม ${fmt(tp)} บาท สำหรับ 2 ท่านครับ`}); } }
+  }
+  const upsellHTML = ups.length? `<div class="upsell"><h3>ข้อเสนอเพิ่มยอด (กดคัดลอกแล้วส่งต่อท้าย)</h3>${ups.map((u,k)=>`<div class="up"><span>${u.t}</span><button class="copy sm" type="button" data-up="${k}">คัดลอก</button></div>`).join("")}</div>` : '';
   document.getElementById("quote").innerHTML = `${status}
     <div class="quote-total"><span>${plan}</span><strong class="num">${fmt(total)} บาท</strong></div>
     <div class="quote-lines">${lines.join("")}</div>
+    ${upsellHTML}
     ${(!nyMin && !beyond && !full.length)?`<button class="copy" id="copyBtn" type="button">คัดลอกข้อความส่งลูกค้า</button><textarea class="copybox" id="copyBox" rows="12" readonly hidden>${msg}</textarea>`:''}`;
+  document.querySelectorAll("[data-up]").forEach(b=>b.addEventListener("click", async()=>{ const m=ups[+b.dataset.up].m; try{ await navigator.clipboard.writeText(m); b.textContent="คัดลอกแล้ว"; }catch(e){ prompt("คัดลอกข้อความนี้", m); } }));
   const btn=document.getElementById("copyBtn");
   if(btn) btn.addEventListener("click", async()=>{
     try{ await navigator.clipboard.writeText(msg); btn.textContent="คัดลอกแล้ว"; }
