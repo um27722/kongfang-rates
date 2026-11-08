@@ -249,7 +249,7 @@ function renderQuote(){
   const ups=[]; const vName=NAME[villa];
   if(!beyond){
     const t1=totalFor(villa,i,n+1);
-    if(t1 && n<6){ const add=t1-total; ups.push({t:`พักเพิ่มอีก 1 คืน (${n+1} คืน) จ่ายเพิ่มแค่ <b>${fmt(add)}</b>`, m:`ถ้าพักเพิ่มอีก 1 คืน เป็น ${n+1} คืน รวม ${fmt(t1)} บาท จ่ายเพิ่มแค่ ${fmt(add)} บาทครับ${n+1===2?' (ได้ราคา 2 คืน ลด 5% ทุกคืน)':n+1===3?' (ได้ราคา 3 คืนขึ้นไป ลด 10% ทุกคืน)':''} จะได้มีเวลาพักผ่อนเต็มที่ ไม่ต้องรีบเช็คเอาท์ครับ 😊`}); }
+    if(t1 && n<14){ const add=t1-total; ups.push({t:`พักเพิ่มอีก 1 คืน (${n+1} คืน) จ่ายเพิ่มแค่ <b>${fmt(add)}</b>`, m:`ถ้าพักเพิ่มอีก 1 คืน เป็น ${n+1} คืน รวม ${fmt(t1)} บาท จ่ายเพิ่มแค่ ${fmt(add)} บาทครับ${n+1===2?' (ได้ราคา 2 คืน ลด 5% ทุกคืน)':n+1===3?' (ได้ราคา 3 คืนขึ้นไป ลด 10% ทุกคืน)':''} จะได้มีเวลาพักผ่อนเต็มที่ ไม่ต้องรีบเช็คเอาท์ครับ 😊`}); }
     if(villa==="M"){ const tS=totalFor("S",i,n); if(tS){ const add=tS-total; ups.push({t:`อัปเกรดเป็น Sunset Pavilion เพิ่ม <b>${fmt(add)}</b>`, m:`อีกทางเลือกนะครับ อัปเกรดเป็น Sunset Pavilion Villa วิลล่าวิวพระอาทิตย์ตก ${n} คืน รวม ${fmt(tS)} บาท เพิ่มจาก Mountain View แค่ ${fmt(add)} บาทครับ เหมาะกับโอกาสพิเศษมากครับ 🌅`}); } }
     const pkgOK = ci >= new Date(2026,11,1);
     if(pkgOK){ for(const k of ["FB","AI"]){ const P=PKG[k]; const tp=P[villa]*n; ups.push({t:`${k==="FB"?"Full Board":"All Inclusive"} ${n} คืน รวม <b>${fmt(tp)}</b> (เพิ่ม ${fmt(tp-total)})`, m:`ถ้าอยากสบาย ไม่ต้องคิดเรื่องอาหาร มีแพ็กเกจ ${P.name} ${vName} Villa ${n} คืน รวม ${fmt(tp)} บาท สำหรับ 2 ท่านครับ`}); } }
@@ -274,7 +274,7 @@ function init(){
   for(let i=0;i<N;i++){ const d=dayAt(i); const o=document.createElement("option"); o.value=i;
     o.textContent=`${TH_DAY[d.getDay()]} ${d.getDate()} ${TH_MON[d.getMonth()]} ${d.getFullYear()+543}`; ci.appendChild(o); }
   const nt=document.getElementById("nights");
-  for(let n=1;n<=6;n++){ const o=document.createElement("option"); o.value=n; o.textContent=n+" คืน"; nt.appendChild(o); }
+  for(let n=1;n<=14;n++){ const o=document.createElement("option"); o.value=n; o.textContent=n+" คืน"; nt.appendChild(o); }
   nt.value=2; ci.value=8; // example: Sun 15 Nov, 2 nights
   ci.addEventListener("change",renderQuote); nt.addEventListener("change",renderQuote);
   const set=v=>{villa=v; document.getElementById("vM").setAttribute("aria-pressed",v==="M"); document.getElementById("vS").setAttribute("aria-pressed",v==="S"); renderQuote();};
