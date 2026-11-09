@@ -92,7 +92,7 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
 <div class="wrap">
   <header>
     <h1>ราคาห้อง Kongfang</h1>
-    <p class="sub">สำหรับแอดมินเสนอราคาจองตรง · อัปเดตล่าสุด <span id="updated" class="num">7 พ.ย. 2569</span></p>
+    <p class="sub">สำหรับแอดมินเสนอราคาจองตรง · อัปเดตล่าสุด <span id="updated" class="num">9 พ.ย. 2569</span></p>
   </header>
 
   <section class="card" aria-labelledby="rules-h">
@@ -110,7 +110,8 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
         <div class="bank">ธนาคารกสิกรไทย · บริษัท เอ็นวี ออลล์ จำกัด · <b class="num">221-1-70170-9</b></div></li>
       <li><b>ลูกค้าจองเองผ่านเว็บ:</b> ระบบตัดบัตรเอง (เรทปกติมัดจำ 50% ตอนจอง ที่เหลือตัด 7 วันก่อนเข้าพัก · Non-refundable ตัด 100% ตอนจอง ไม่คืนเงิน) ขนุนไม่ต้องเก็บเงินเพิ่ม</li>
       <li>เช็คอิน 15:00 · เช็คเอาท์ 12:00 · ยกเลิกฟรีก่อนวันเข้าพัก 7 วัน</li>
-      <li><b>ปีใหม่ 24 ธ.ค. – 2 ม.ค.:</b> Mountain View 5,990 · Sunset Pavilion 7,490 ต่อคืน (2 คืนลด 5%, 3+ คืนลด 10% ตามปกติ)</li>
+      <li><b>ปีใหม่ 24 ธ.ค. – 2 ม.ค.:</b> Mountain View 5,990 · Sunset Pavilion 7,490 ต่อคืน (Sunset 24–26 ธ.ค. = 8,290) · 2 คืนลด 5%, 3+ คืนลด 10% ตามปกติ</li>
+      <li><b>ราคาปรับรายวัน (9 พ.ย.):</b> บางวันราคาขึ้นเพราะเหลือห้องน้อย หรือลดเพราะใกล้วันแล้วยังว่าง ใช้ราคาในตาราง/ช่องคิดราคาด้านล่างเสมอ</li>
     </ul>
   </section>
 
@@ -187,8 +188,8 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
 </div>
 
 <script>
-const UPDATED = "7 พ.ย. 2569";
-const START = new Date(2026, 10, 7); // 7 Nov 2026
+const UPDATED = "9 พ.ย. 2569";
+const START = new Date(2026, 10, 9); // 9 Nov 2026
 
 const NAME = {M:"Mountain View", S:"Sunset Pavilion"};
 // Value Season base rate: Sun–Thu / Fri–Sat (Nov & Feb) / Fri–Sat (Dec–Jan)
@@ -200,7 +201,20 @@ const fmt = n => n.toLocaleString("en-US");
 function dayAt(i){ const d=new Date(START); d.setDate(d.getDate()+i); return d; }
 const NY = {M:5990, S:7490};
 function isNY(d){ const m=d.getMonth(), x=d.getDate(); return (m===11&&x>=24)||(m===0&&x<=2); }
+// Date-specific Value Season overrides (applied in Little Hotelier 9 Nov 2026)
+const OVR = {
+  "2026-11-09":{M:4190,S:5490}, "2026-11-10":{M:4190}, "2026-11-13":{M:4590}, "2026-11-14":{S:5990},
+  "2026-11-23":{M:4990,S:6590}, "2026-11-24":{S:6590}, "2026-11-26":{S:6590}, "2026-11-27":{M:5490,S:7190},
+  "2026-11-29":{S:6590}, "2026-11-30":{M:4990}, "2026-12-01":{M:4990}, "2026-12-03":{S:6590},
+  "2026-12-05":{S:7490}, "2026-12-11":{S:7490}, "2026-12-12":{S:7490}, "2026-12-18":{S:7490},
+  "2026-12-20":{S:6590}, "2026-12-22":{M:4990}, "2026-12-24":{S:8290}, "2026-12-25":{S:8290}, "2026-12-26":{S:8290},
+  "2027-01-04":{S:6590}, "2027-01-06":{M:4990}, "2027-01-07":{S:6590}, "2027-01-12":{M:4990},
+  "2027-01-13":{S:6590}, "2027-01-14":{S:6590}, "2027-01-15":{S:7490}, "2027-01-16":{M:5890,S:7490},
+  "2027-01-17":{M:4990,S:6590}
+};
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 function rate(v, d){
+  const o = OVR[iso(d)]; if(o && o[v]) return o[v];
   if(isNY(d)) return NY[v];
   const dow=d.getDay(), m=d.getMonth(); const we = dow===5||dow===6;
   if(!we) return BASE[v].wd;
@@ -208,7 +222,7 @@ function rate(v, d){
 }
 const r2 = x => Math.round(x*0.95);
 const r3 = x => Math.round(x*0.90);
-const N = 114; // 7 Nov 2026 – 28 Feb 2027 (Value Season)
+const N = 112; // 9 Nov 2026 – 28 Feb 2027 (Value Season)
 
 
 function renderList(){
@@ -285,7 +299,7 @@ function init(){
     o.textContent=`${TH_DAY[d.getDay()]} ${d.getDate()} ${TH_MON[d.getMonth()]} ${d.getFullYear()+543}`; ci.appendChild(o); }
   const nt=document.getElementById("nights");
   for(let n=1;n<=14;n++){ const o=document.createElement("option"); o.value=n; o.textContent=n+" คืน"; nt.appendChild(o); }
-  nt.value=2; ci.value=8; // example: Sun 15 Nov, 2 nights
+  nt.value=2; ci.value=6; // example: Sun 15 Nov, 2 nights
   ci.addEventListener("change",renderQuote); nt.addEventListener("change",renderQuote);
   for(const id of ["xbed","xdog","xtr"]) document.getElementById(id).addEventListener("change",renderQuote);
   const set=v=>{villa=v; document.getElementById("vM").setAttribute("aria-pressed",v==="M"); document.getElementById("vS").setAttribute("aria-pressed",v==="S"); renderQuote();};
