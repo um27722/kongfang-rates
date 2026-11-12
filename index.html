@@ -84,6 +84,11 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
 .foot{font-size:.82rem;color:var(--muted)}
 @media (max-width:380px){.v{grid-template-columns:1fr}.prices{text-align:left}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.ride-card{border-color:var(--pine)}
+.ride-card ol{margin:6px 0 10px;padding-left:1.2em;line-height:1.6}
+.ride-btns{display:flex;gap:8px;flex-wrap:wrap}
+.ride-btn{display:inline-flex;align-items:center;gap:6px;font:inherit;font-weight:600;padding:10px 14px;border-radius:10px;background:var(--pine);color:var(--surface);text-decoration:none}
+.ride-btn.alt{background:var(--surface);color:var(--pine);border:1px solid var(--pine)}
 </style>
 </head>
 <body>
@@ -94,6 +99,17 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
     <h1>ราคาห้อง Kongfang</h1>
     <p class="sub">สำหรับแอดมินเสนอราคาจองตรง · อัปเดตล่าสุด <span id="updated" class="num">9 พ.ย. 2569</span></p>
   </header>
+
+  <section class="card ride-card" aria-labelledby="ride-h">
+    <h2 id="ride-h">🚐 ลูกค้าต้องการรถรับ-ส่ง → ลงตารางรถ</h2>
+    <ol>
+      <li>ถามลูกค้า: <b>วันไหน · รับหรือส่ง · เที่ยวบิน + เวลาเครื่องลง/ออก · กี่คน กี่กระเป๋า</b> (ถ้าไม่ใช่สนามบิน ถามที่รับ-ส่ง)</li>
+      <li>กดปุ่มด้านล่าง กรอกข้อมูลลงตารางรถ ระบบคิดเวลารถออกให้เอง ถ้า X-Trail ไม่ว่าง ระบบจะบอก และให้เลือกรถน้องเข็มแทน (รออั้มอนุมัติ)</li>
+      <li>ใน Little Hotelier พิมพ์โน้ตสั้นๆ ที่การจองนั้นพอ เช่น <b>"🚙 รับ 11:45 TG102 (ดูตารางรถ)"</b></li>
+    </ol>
+    <div class="ride-btns"><a class="ride-btn" href="https://kongfang-ops.netlify.app/?tab=ride&amp;add=guest" target="_blank" rel="noopener">+ ลงรับ-ส่งแขก</a><a class="ride-btn alt" href="https://kongfang-ops.netlify.app/?tab=ride" target="_blank" rel="noopener">ดูตารางรถ</a></div>
+    <p class="sub" style="margin:8px 0 0">ใช้ครั้งแรก: ล็อกอินบัญชีทีม (ขอจากอั้ม/เบลล์) แล้วแตะชื่อ "ขนุน" ครั้งต่อไปเปิดแล้วเข้าได้เลย · ลูกค้าจาก OTA ขอรถก็ลงที่นี่เหมือนกัน</p>
+  </section>
 
   <section class="card" aria-labelledby="rules-h">
     <h2 id="rules-h">กติกาเสนอราคา</h2>
