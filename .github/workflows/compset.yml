@@ -1,0 +1,41 @@
+name: Compset occupancy (daily)
+
+on:
+  schedule:
+    - cron: "37 23 * * *"   # 06:37 Bangkok time, every day
+  workflow_dispatch: {}
+  push:
+    paths:
+      - "compset/collect.py"
+      - ".github/workflows/compset.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: compset
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Collect availability
+        run: python compset/collect.py
+      - name: Commit data
+        run: |
+          git config user.name "compset-bot"
+          git config user.email "compset-bot@users.noreply.github.com"
+          git add compset/data
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "compset: data $(TZ=Asia/Bangkok date +%F)"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi

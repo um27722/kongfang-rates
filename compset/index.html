@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kongfang · ยอดจองเทียบคู่แข่ง</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+.viz-root{
+  color-scheme:light;
+  --surface-0:#f4f3ef; --surface-1:#fcfcfb; --border:#e3e1da;
+  --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#7a7873;
+  --series-1:#2a78d6; --neutral-bar:#c9c6bd; --track:#eceae4;
+  --seq-0:#f1f0ec; --seq-1:#cde2fb; --seq-2:#9ec5f4; --seq-3:#6da7ec; --seq-4:#3987e5; --seq-5:#256abf; --seq-6:#184f95; --seq-7:#0d366b;
+  --good:#0f7b3a; --critical:#c23934;
+}
+@media (prefers-color-scheme:dark){
+  :root:where(:not([data-theme="light"])) .viz-root{
+    color-scheme:dark;
+    --surface-0:#121211; --surface-1:#1a1a19; --border:#2f2e2b;
+    --text-primary:#f0efec; --text-secondary:#c3c2b7; --text-muted:#929087;
+    --series-1:#3987e5; --neutral-bar:#57554f; --track:#26251f;
+    --seq-0:#23221f; --seq-1:#0d366b; --seq-2:#104281; --seq-3:#184f95; --seq-4:#256abf; --seq-5:#3987e5; --seq-6:#6da7ec; --seq-7:#b7d3f6;
+    --good:#3fb96a; --critical:#e66767;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"IBM Plex Sans Thai",system-ui,sans-serif;background:var(--surface-0);color:var(--text-primary);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:24px;font-weight:600;margin:0 0 4px}
+h2{font-size:17px;font-weight:600;margin:0 0 4px}
+.sub{color:var(--text-secondary);font-size:13.5px}
+.muted{color:var(--text-muted)}
+.card{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:18px}
+.kpi{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:16px 18px}
+.kpi .label{font-size:13px;color:var(--text-secondary)}
+.kpi .val{font-size:28px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+.kpi .note{font-size:12.5px;color:var(--text-muted)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 4px}
+.tab{border:1px solid var(--border);background:var(--surface-1);color:var(--text-primary);border-radius:999px;padding:6px 14px;font:inherit;font-size:14px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--text-primary);color:var(--surface-1);border-color:var(--text-primary)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font-size:12.5px;font-weight:500;color:var(--text-secondary);text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+th:first-child,td:first-child,th.l,td.l{text-align:left}
+td{padding:10px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
+tr.self td{font-weight:600}
+tr.self td:first-child{box-shadow:inset 3px 0 0 var(--series-1)}
+.barcell{width:34%;min-width:160px}
+.bar{position:relative;height:10px;border-radius:5px;background:var(--track)}
+.bar>i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--neutral-bar)}
+tr.self .bar>i{background:var(--series-1)}
+.pct{display:inline-block;min-width:44px}
+.up{color:var(--good)} .down{color:var(--critical)}
+.err{color:var(--critical);font-size:12.5px}
+.scroll{overflow-x:auto}
+.heat{display:grid;gap:2px;align-items:center;min-width:760px}
+.heat .rowlab{font-size:13px;white-space:nowrap;padding-right:8px}
+.heat .rowlab.self{font-weight:600}
+.heat .dlab{font-size:11px;color:var(--text-muted);text-align:center}
+.heat .dlab.we{color:var(--text-secondary);font-weight:600}
+.cell{height:26px;border-radius:4px;background:var(--seq-0);cursor:default;outline:none}
+.cell:focus-visible{box-shadow:0 0 0 2px var(--text-primary)}
+.legend{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-secondary);margin-top:12px;flex-wrap:wrap}
+.legend .sw{width:22px;height:12px;border-radius:3px}
+#tip{position:fixed;pointer-events:none;background:var(--text-primary);color:var(--surface-1);padding:8px 10px;border-radius:8px;font-size:12.5px;line-height:1.45;opacity:0;transition:opacity .08s;z-index:10;max-width:260px}
+details{margin-top:6px}
+summary{cursor:pointer;color:var(--text-secondary);font-size:14px}
+.notes li{margin:4px 0;color:var(--text-secondary);font-size:13.5px}
+.status{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--text-secondary);margin-top:8px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:1px}
+</style>
+</head>
+<body>
+<div class="viz-root">
+<div class="wrap">
+  <h1>ยอดจองกองฟาง เทียบคู่แข่งเชียงดาว</h1>
+  <div class="sub" id="updated">กำลังโหลด…</div>
+  <div class="status" id="status"></div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card">
+    <h2>รายเดือน: ห้อง-คืนที่ขายได้ และรายได้ประมาณการ</h2>
+    <div class="sub">นับเฉพาะคืนตั้งแต่วันนี้เป็นต้นไป · เรียงตาม Occupancy · "เพิ่มจาก" = ห้อง-คืนที่ถูกจองเพิ่มเทียบกับรอบเก็บข้อมูลก่อนหน้า</div>
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div class="scroll"><table id="monthTable"></table></div>
+  </div>
+
+  <div class="card">
+    <h2>รายคืน: แต่ละที่ขายไปแล้วกี่ %</h2>
+    <div class="sub">ชี้ที่ช่องเพื่อดูจำนวนห้องและราคา · ตัวหนาคือวันศุกร์–เสาร์</div>
+    <div class="scroll"><div class="heat" id="heat"></div></div>
+    <div class="legend" id="heatLegend"></div>
+  </div>
+
+  <div class="card">
+    <details>
+      <summary>ตัวเลขมาจากไหน และข้อควรระวัง</summary>
+      <ul class="notes">
+        <li>ดึงจาก<b>หน้าจองตรง</b>ของแต่ละที่ทุกเช้า ประมาณ 06:30 น. นับห้องที่ยังเปิดให้จองต่อคืน แล้วคิดว่าห้องที่หายไปคือขายแล้ว</li>
+        <li>ห้องที่เจ้าของปิดเอง (ซ่อม ใช้เอง กันไว้ให้กรุ๊ป) จะถูกนับเหมือนขายแล้ว ตัวเลขคู่แข่งจึงอาจสูงกว่าความจริงเล็กน้อย</li>
+        <li><b>รายได้ประมาณการ</b> = ห้อง-คืนที่ขายได้ × ราคาเฉลี่ยที่ที่นั้นเปิดขายในเดือนนั้น (ราคาต่ำสุดต่อแบบห้อง สำหรับ 2 ท่าน) ไม่หักค่าคอมมิชชั่น OTA และไม่รวมอาหาร/กิจกรรม ใช้ดูขนาดคร่าวๆ เทียบกัน ไม่ใช่ตัวเลขบัญชี</li>
+        <li>คืนที่ห้องเต็มทั้งหมดจะไม่มีราคาให้เห็น ระบบจึงใช้ราคาเฉลี่ยของคืนอื่นในเดือนเดียวกันแทน</li>
+        <li>ตัวเลขของกองฟางเองใช้วิธีเดียวกัน (จากหน้าจองตรง) เพื่อให้เทียบกันได้ ยอดจริงดูได้ใน Little Hotelier</li>
+      </ul>
+    </details>
+  </div>
+</div>
+<div id="tip" role="tooltip"></div>
+</div>
+
+<script>
+const TH_MON = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const TH_MON_FULL = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const TH_DOW = ['อา','จ','อ','พ','พฤ','ศ','ส'];
+const fmt = n => n == null ? '–' : Math.round(n).toLocaleString('th-TH');
+const fmtK = n => n == null ? '–' : (n >= 1e6 ? (n/1e6).toFixed(2)+' ล้าน' : Math.round(n/1000).toLocaleString('th-TH')+'K');
+const pct = (a,b) => b ? Math.round(100*a/b) : 0;
+const monthKey = d => d.slice(0,7);
+const monLabel = k => { const [y,m] = k.split('-'); return TH_MON_FULL[+m-1]+' '+(+y+543); };
+const dowOf = d => new Date(d+'T00:00:00Z').getUTCDay();
+
+let DATA, PREV, PREV_DATE, ACTIVE;
+
+async function load(){
+  const bust = '?t=' + Date.now();
+  DATA = await (await fetch('data/latest.json'+bust)).json();
+  try {
+    const idx = await (await fetch('data/history/index.json'+bust)).json();
+    const past = idx.filter(d => d < DATA.today);
+    // compare with the snapshot ~7 days ago, else the oldest one we have
+    const target = new Date(DATA.today+'T00:00:00Z'); target.setUTCDate(target.getUTCDate()-7);
+    const t = target.toISOString().slice(0,10);
+    PREV_DATE = past.filter(d => d <= t).pop() || past[0];
+    if (PREV_DATE) PREV = await (await fetch(`data/history/${PREV_DATE}.json`+bust)).json();
+  } catch(e) {}
+  render();
+}
+
+function monthStats(p, key){
+  const nights = Object.entries(p.nightly).filter(([d]) => monthKey(d) === key);
+  let sold=0,total=0; const prices=[];
+  for (const [,v] of nights){ sold+=v[0]; total+=v[1]; if (v[2]) prices.push(v[2]); }
+  let adr = prices.length ? prices.reduce((a,b)=>a+b,0)/prices.length : null;
+  if (adr == null){
+    const all = Object.values(p.nightly).map(v=>v[2]).filter(Boolean);
+    adr = all.length ? all.reduce((a,b)=>a+b,0)/all.length : null;
+  }
+  let pick = null;
+  if (PREV && PREV.sold[p.id]){
+    let before=0, cnt=0;
+    for (const [d] of nights){ const v = PREV.sold[p.id][d]; if (v!=null){ before+=v; cnt++; } }
+    if (cnt) pick = nights.filter(([d]) => PREV.sold[p.id][d]!=null).reduce((a,[,v])=>a+v[0],0) - before;
+  }
+  return {sold,total,occ:pct(sold,total),adr,rev: adr!=null ? sold*adr : null,pick,n:nights.length};
+}
+
+function render(){
+  const props = DATA.properties;
+  const self = props.find(p => p.self);
+  const when = new Date(DATA.collected_at);
+  document.getElementById('updated').textContent =
+    `อัปเดตล่าสุด ${when.toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Bangkok'})} น.` +
+    (PREV_DATE ? ` · เทียบการจองเพิ่มกับข้อมูลวันที่ ${new Date(PREV_DATE+'T00:00:00Z').toLocaleDateString('th-TH',{day:'numeric',month:'short',timeZone:'UTC'})}` : ' · ยังไม่มีข้อมูลรอบก่อนให้เทียบการจองเพิ่ม');
+  document.getElementById('status').innerHTML = props.map(p =>
+    `<span><span class="dot" style="background:${p.status==='ok'?'var(--good)':'var(--critical)'}"></span>${p.name}${p.status==='ok'?'':' — ดึงไม่สำเร็จ ใช้ข้อมูลรอบก่อน'}</span>`).join('');
+
+  const months = [...new Set(Object.keys(self.nightly).map(monthKey))].sort().slice(0,4);
+  if (!ACTIVE || !months.includes(ACTIVE)) ACTIVE = months[0];
+
+  // KPIs (Kongfang)
+  const next30 = Object.entries(self.nightly).slice(0,30);
+  const s30 = next30.reduce((a,[,v])=>a+v[0],0), t30 = next30.reduce((a,[,v])=>a+v[1],0);
+  const peers = props.filter(p => !p.self && p.status==='ok');
+  const peer30 = peers.map(p => { const e=Object.entries(p.nightly).slice(0,30); return pct(e.reduce((a,[,v])=>a+v[0],0), e.reduce((a,[,v])=>a+v[1],0)); });
+  const peerAvg = peer30.length ? Math.round(peer30.reduce((a,b)=>a+b,0)/peer30.length) : null;
+  const revAll = months.slice(0,3).map(m => monthStats(self,m).rev||0).reduce((a,b)=>a+b,0);
+  const pickAll = months.map(m => monthStats(self,m).pick).filter(v=>v!=null);
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><div class="label">กองฟาง 30 คืนข้างหน้า</div><div class="val">${pct(s30,t30)}%</div><div class="note">${s30}/${t30} ห้อง-คืน · ค่าเฉลี่ยคู่แข่ง ${peerAvg ?? '–'}%</div></div>
+    <div class="kpi"><div class="label">รายได้ห้องพักประมาณการ (${months.slice(0,3).map(m=>TH_MON[+m.slice(5)-1]).join(' ')})</div><div class="val">฿${fmtK(revAll)}</div><div class="note">จากยอดที่จองแล้ว ณ วันนี้</div></div>
+    <div class="kpi"><div class="label">จองเพิ่มตั้งแต่รอบก่อน</div><div class="val">${pickAll.length ? (pickAll.reduce((a,b)=>a+b,0)>=0?'+':'')+pickAll.reduce((a,b)=>a+b,0) : '–'}</div><div class="note">${pickAll.length ? 'ห้อง-คืน (รวมทุกเดือนที่แสดง)' : 'จะเริ่มแสดงหลังเก็บข้อมูลครบ 2 วัน'}</div></div>`;
+
+  // tabs
+  const tabs = document.getElementById('tabs');
+  tabs.innerHTML = months.map(m => `<button class="tab" role="tab" aria-selected="${m===ACTIVE}" data-m="${m}">${monLabel(m)}</button>`).join('');
+  tabs.querySelectorAll('.tab').forEach(b => b.onclick = () => { ACTIVE = b.dataset.m; render(); });
+
+  // month table
+  const rows = props.map(p => ({p, s: monthStats(p, ACTIVE)})).sort((a,b) => b.s.occ - a.s.occ || b.s.sold - a.s.sold);
+  const nNights = rows[0] ? rows[0].s.n : 0;
+  document.getElementById('monthTable').innerHTML = `
+    <thead><tr><th class="l">ที่พัก</th><th>ห้อง</th><th>ห้อง-คืนที่ขายได้</th><th class="l">Occupancy</th><th>ราคาเฉลี่ย/คืน*</th><th>รายได้ประมาณการ*</th><th>เพิ่มจากรอบก่อน</th></tr></thead>
+    <tbody>${rows.map(({p,s}) => `
+      <tr class="${p.self?'self':''}">
+        <td>${p.name}${p.status!=='ok'?' <span class="err">(ข้อมูลเก่า)</span>':''}</td>
+        <td>${p.units}</td>
+        <td>${s.sold} / ${s.total}</td>
+        <td class="barcell l"><span class="pct">${s.occ}%</span><div class="bar" style="display:inline-block;width:calc(100% - 52px);vertical-align:middle"><i style="width:${s.occ}%"></i></div></td>
+        <td>฿${fmt(s.adr)}</td>
+        <td>฿${fmtK(s.rev)}</td>
+        <td class="${s.pick>0?'up':s.pick<0?'down':''}">${s.pick==null?'–':(s.pick>0?'+':'')+s.pick}</td>
+      </tr>`).join('')}</tbody>`;
+  document.querySelector('#monthTable').insertAdjacentHTML('afterend','');
+
+  // heatmap
+  const days = Object.keys(self.nightly).filter(d => monthKey(d) === ACTIVE);
+  const heat = document.getElementById('heat');
+  heat.style.gridTemplateColumns = `150px repeat(${days.length}, minmax(18px,1fr))`;
+  let html = '<div></div>' + days.map(d => { const w=dowOf(d); return `<div class="dlab ${w===5||w===6?'we':''}">${+d.slice(8)}<br>${TH_DOW[w]}</div>`; }).join('');
+  for (const p of props){
+    html += `<div class="rowlab ${p.self?'self':''}">${p.name}</div>`;
+    for (const d of days){
+      const v = p.nightly[d];
+      if (!v){ html += '<div class="cell"></div>'; continue; }
+      const o = pct(v[0],v[1]);
+      const step = o===0 ? 0 : Math.min(7, Math.ceil(o/100*7));
+      html += `<div class="cell" tabindex="0" style="background:var(--seq-${step})" data-tip="${p.name}<br>${new Date(d+'T00:00:00Z').toLocaleDateString('th-TH',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'})}<br><b>${v[0]}/${v[1]} ห้อง (${o}%)</b>${v[2]?'<br>ราคาเปิดขาย ~฿'+fmt(v[2]):''}"></div>`;
+    }
+  }
+  heat.innerHTML = html;
+  document.getElementById('heatLegend').innerHTML = 'ขายแล้ว: ' +
+    [['0%',0],['1–14%',1],['~30%',2],['~45%',3],['~60%',4],['~75%',5],['~90%',6],['100%',7]]
+      .map(([l,s]) => `<span class="sw" style="background:var(--seq-${s})"></span>${l}`).join(' ');
+}
+
+const tip = document.getElementById('tip');
+document.addEventListener('pointerover', e => { const c = e.target.closest('[data-tip]'); if (!c) { tip.style.opacity=0; return; } tip.innerHTML = c.dataset.tip; tip.style.opacity=1; });
+document.addEventListener('pointermove', e => { tip.style.left = Math.min(e.clientX+14, innerWidth-270)+'px'; tip.style.top = (e.clientY+14)+'px'; });
+document.addEventListener('focusin', e => { const c = e.target.closest('[data-tip]'); if (!c) return; const r=c.getBoundingClientRect(); tip.innerHTML=c.dataset.tip; tip.style.left=Math.min(r.left, innerWidth-270)+'px'; tip.style.top=(r.bottom+6)+'px'; tip.style.opacity=1; });
+document.addEventListener('focusout', () => tip.style.opacity = 0);
+load().catch(e => { document.getElementById('updated').textContent = 'ยังไม่มีข้อมูล — ระบบจะเก็บรอบแรกภายในไม่กี่นาทีหลังติดตั้ง'; });
+</script>
+</body>
+</html>
