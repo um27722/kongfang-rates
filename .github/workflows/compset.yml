@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  pages: write
 
 concurrency:
   group: compset
@@ -38,4 +39,8 @@ jobs:
             git commit -m "compset: data $(TZ=Asia/Bangkok date +%F)"
             git pull --rebase origin "${GITHUB_REF_NAME}"
             git push
+            # commits made with GITHUB_TOKEN don't trigger a Pages rebuild on their own
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" || true
           fi
+        env:
+          GH_TOKEN: ${{ github.token }}
