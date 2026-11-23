@@ -58,6 +58,14 @@ select:focus-visible,button:focus-visible{outline:2px solid var(--pine);outline-
 .up b{color:var(--pine)}
 .copy.sm{font-size:.8rem;padding:5px 10px}
 .copy{align-self:flex-start;font:inherit;font-size:.88rem;padding:8px 14px;border-radius:8px;border:1px solid var(--pine);background:transparent;color:var(--pine);cursor:pointer;font-weight:600}
+.quote-lines .grp{color:var(--fg);font-weight:600;margin-top:4px}
+.msgs{display:flex;flex-direction:column;gap:10px}
+.msg{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.msg h3{font-family:var(--display);font-size:.95rem;margin:0}
+.msg p{margin:0;font-size:.82rem;color:var(--muted)}
+.msg.close{border-color:var(--pine);background:var(--pine-soft)}
+.copy.fill{background:var(--pine);color:var(--surface)}
+.msg details summary{font-size:.8rem;color:var(--muted);cursor:pointer}
 textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--fg)}
 /* day list */
 .listhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -196,16 +204,13 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
 
   <section class="card" aria-labelledby="calc-h">
     <h2 id="calc-h">คิดราคาให้ลูกค้า</h2>
+    <p class="sub" style="margin:0">เลือกได้ทั้ง 2 แบบพร้อมกัน · ช่วงเสนอขายใช้ข้อความ <b>① เสนอขาย</b> · ลูกค้าตกลงแล้วใช้ข้อความ <b>② ปิดดีล</b></p>
     <div class="calc-grid">
-      <label class="f full-w" for="ci">วันเช็คอิน<select id="ci"></select></label>
+      <label class="f" for="ci">วันเช็คอิน<select id="ci"></select></label>
       <label class="f" for="nights">จำนวนคืน<select id="nights"></select></label>
-      <div class="f"><span>วิลล่า</span>
-        <div class="seg" role="group" aria-label="เลือกวิลล่า">
-          <button type="button" id="vM" aria-pressed="true">Mountain</button>
-          <button type="button" id="vS" aria-pressed="false">Sunset</button>
-        </div>
-      </div>
-      <label class="f" for="xbed">เตียงเสริม (900/คืน)<select id="xbed"><option value="0">ไม่มี</option><option value="1">1 เตียง</option><option value="2">2 เตียง</option></select></label>
+      <label class="f" for="qM">⛰️ Mountain View<select id="qM"><option value="0">ไม่เอา</option><option value="1">1 หลัง</option><option value="2">2 หลัง</option></select></label>
+      <label class="f" for="qS">🌅 Sunset Pavilion<select id="qS"><option value="0">ไม่เอา</option><option value="1">1 หลัง</option><option value="2">2 หลัง</option></select></label>
+      <label class="f" for="xbed">เตียงเสริม (900/คืน)<select id="xbed"><option value="0">ไม่มี</option><option value="1">1 เตียง</option><option value="2">2 เตียง</option><option value="3">3 เตียง</option><option value="4">4 เตียง</option></select></label>
       <label class="f" for="xdog">น้องหมา (750/ตัว/คืน)<select id="xdog"><option value="0">ไม่มี</option><option value="1">1 ตัว</option><option value="2">2 ตัว</option><option value="3">3 ตัว</option></select></label>
       <label class="f full-w" for="xtr">รถรับส่งสนามบินเชียงใหม่<select id="xtr"><option value="0">ไม่รับ</option><option value="1">รับ ไป-กลับ 2,900 บาท</option></select></label>
     </div>
@@ -281,18 +286,37 @@ function renderList(){
 }
 
 function totalFor(v,i,n){ let t=0; for(let k=0;k<n;k++){ const j=i+k; if(j>=N) return null; const b=rate(v,dayAt(j)); t+= n>=3? r3(b) : n===2? r2(b) : b; } return t; }
+function roomsTotal(sel,i,n){ let t=0; for(const v of ["M","S"]) if(sel[v]){ const x=totalFor(v,i,n); if(x===null) return null; t+=x*sel[v]; } return t; }
 const PKG = {FB:{M:8990,S:9990,name:"Full Board (อาหาร 3 มื้อ)"}, AI:{M:11900,S:13900,name:"All Inclusive + Activities (3 มื้อ + เครื่องดื่ม + กิจกรรมวันละ 1 อย่าง + รับส่งสนามบินเชียงใหม่)"}};
-let villa="M";
+// Room details used in the sales message (edit here)
+const ROOM_INFO = {
+  M:{icon:"⛰️", lines:["วิวภูเขา ห้องกว้าง เป็นส่วนตัว","ห้องอาบน้ำแบบ walk-in shower · เตียงใหญ่ 6 ฟุต","เครื่องอำนวยความสะดวกครบ"]},
+  S:{icon:"🌅", lines:["ห้องทรงสามเหลี่ยม วิวพระอาทิตย์ตก เป็นส่วนตัวที่สุด","มี dining area โซนนั่งเล่น ทานข้าวแบบ private","ห้องอาบน้ำแบบ walk-in shower · เตียงใหญ่ 6 ฟุต","เครื่องอำนวยความสะดวกครบ"]}
+};
+const ACT_TEXT = "🌟กิจกรรมในที่พัก\n• เล่นบอร์ดเกม / ตีแบต / ปั่นจักรยาน (ฟรี)\n• ล่องแพ / เดินป่า / ชมทะเลหมอก / นวด (มีค่าใช้จ่ายเพิ่มเติม)";
+const BANK_TEXT = "ธนาคารกสิกรไทย\nชื่อบัญชี บริษัท เอ็นวี ออลล์ จำกัด\nเลขที่บัญชี 221-1-70170-9";
+const dstr = d => `${d.getDate()} ${TH_MON[d.getMonth()]}`;
+
+function getSel(){ return {M:+document.getElementById("qM").value, S:+document.getElementById("qS").value}; }
+
 function renderQuote(){
   const i=+document.getElementById("ci").value, n=+document.getElementById("nights").value;
-  const lines=[]; let total=0, full=[], beyond=false;
-  for(let k=0;k<n;k++){
-    const j=i+k; if(j>=N){beyond=true;break;}
-    const d=dayAt(j); const b=rate(villa,d); const p = n>=3? r3(b) : n===2? r2(b) : b;
-    total+=p;
-    lines.push(`<div><span>คืน ${TH_DAY[d.getDay()]} ${d.getDate()} ${TH_MON[d.getMonth()]}</span><span class="num">${fmt(p)}</span></div>`);
+  const sel=getSel(); const types=["M","S"].filter(v=>sel[v]>0);
+  const q=document.getElementById("quote");
+  if(!types.length){ q.innerHTML='<div class="warn">เลือกวิลล่าอย่างน้อย 1 หลัง</div>'; return; }
+  const lines=[]; let beyond=false; const per={}; let roomTotal=0;
+  for(const v of types){
+    let t=0;
+    lines.push(`<div class="grp"><span>${NAME[v]} Villa × ${sel[v]} หลัง</span><span></span></div>`);
+    for(let k=0;k<n;k++){
+      const j=i+k; if(j>=N){beyond=true;break;}
+      const d=dayAt(j); const b=rate(v,d); const p = n>=3? r3(b) : n===2? r2(b) : b;
+      t+=p;
+      lines.push(`<div><span>คืน ${TH_DAY[d.getDay()]} ${dstr(d)}${sel[v]>1?` (${fmt(p)} × ${sel[v]})`:''}</span><span class="num">${fmt(p*sel[v])}</span></div>`);
+    }
+    per[v]={each:t, total:t*sel[v]}; roomTotal+=t*sel[v];
   }
-  const roomTotal = total;
+  let total=roomTotal;
   const nb=+document.getElementById("xbed").value, nd=+document.getElementById("xdog").value, tr=+document.getElementById("xtr").value;
   const extras=[];
   if(nb) extras.push({l:`เตียงเสริม ${nb} เตียง × ${n} คืน`, a:900*nb*n});
@@ -301,31 +325,63 @@ function renderQuote(){
   for(const x of extras){ total+=x.a; lines.push(`<div><span>+ ${x.l}</span><span class="num">${fmt(x.a)}</span></div>`); }
   const plan = n>=3? "ราคา 3+ คืน (ลด 10%)" : n===2? "ราคา 2 คืน (ลด 5%)" : "ราคา 1 คืน";
   const ci=dayAt(i), co=dayAt(i+n);
-  const nyMin = false;
-  let status = nyMin? '<div class="warn">ช่วงปีใหม่ 24 ธ.ค. – 2 ม.ค. ต้องพักขั้นต่ำ 2 คืน</div>' : beyond? '<div class="warn">ช่วงวันที่เลือกเกินข้อมูลในหน้านี้ ให้ถามอั้ม</div>'
-    : full.length? `<div class="warn">${NAME[villa]} เต็มคืนวันที่ ${full.join(", ")} รับจองไม่ได้ ลองอีกวิลล่าหรือวันอื่น</div>`
-    : `<div class="ok">เช็คห้องว่าง ${NAME[villa]} ใน Little Hotelier ก่อนส่งราคาให้ลูกค้า</div>`;
-  const msg = `Kongfang Wilderness Retreat\n${NAME[villa]} Villa · ${n} คืน\nเช็คอิน ${ci.getDate()} ${TH_MON[ci.getMonth()]} – เช็คเอาท์ ${co.getDate()} ${TH_MON[co.getMonth()]}${extras.length? `\nค่าห้อง ${fmt(roomTotal)} บาท (รวมอาหารเช้า 2 ท่าน)${extras.map(x=>`\n+ ${x.l} ${fmt(x.a)} บาท`).join("")}\nรวมทั้งหมด ${fmt(total)} บาท` : `\nรวม ${fmt(total)} บาท (รวมอาหารเช้า 2 ท่าน)`}\n\nชำระโดยโอนเข้าบัญชี เลือกได้ 2 แบบครับ\n① โอนเต็ม ${fmt(total)} บาท รับส่วนลดค่าอาหารและกิจกรรม 10% ตลอดการเข้าพัก\n② โอนมัดจำ 50% = ${fmt(Math.round(total/2))} บาท ส่วนที่เหลือชำระตอนเช็คเอาท์ (ลดค่าอาหารและกิจกรรม 5%)\n\nธนาคารกสิกรไทย\nชื่อบัญชี บริษัท เอ็นวี ออลล์ จำกัด\nเลขที่บัญชี 221-1-70170-9\nหากชำระเรียบร้อย รบกวนคุณลูกค้าส่งสลิปกลับมาครับ :))\n\n✨ จองตรงกับเรา ได้ส่วนลดค่าอาหารและกิจกรรม และคุยกับทีมเราได้โดยตรงตลอดการเข้าพัก`;
-  const ups=[]; const vName=NAME[villa];
+  const nRooms=sel.M+sel.S;
+  const status = beyond? '<div class="warn">ช่วงวันที่เลือกเกินข้อมูลในหน้านี้ ให้ถามอั้ม</div>'
+    : `<div class="ok">เช็คห้องว่าง ${types.map(v=>`${NAME[v]} ${sel[v]} หลัง`).join(" + ")} ใน Little Hotelier ก่อนส่งราคาให้ลูกค้า</div>`;
+  const head = `Kongfang Wilderness Retreat\nเช็คอิน ${dstr(ci)} – เช็คเอาท์ ${dstr(co)} (${n} คืน)`;
+  const disc = n>=3? " (ราคาพัก 3 คืนขึ้นไป ลด 10%)" : n===2? " (ราคาพัก 2 คืน ลด 5%)" : "";
+
+  // ① Sales message: each villa with its price + details + activities (no combined total, so it works for "pick one" too)
+  const priceLine = v => {
+    const e=per[v].each;
+    let s = n===1? `${fmt(e)} บาท / คืน` : `${fmt(e)} บาท / ${n} คืน${disc}`;
+    if(sel[v]>1) s += ` · ${sel[v]} หลัง รวม ${fmt(per[v].total)} บาท`;
+    return s;
+  };
+  const offer = `${head}\n\n` + types.map(v=>`${ROOM_INFO[v].icon}${NAME[v]} Villa ${priceLine(v)}\n${ROOM_INFO[v].lines.map(l=>"-"+l).join("\n")}`).join("\n\n")
+    + `\n\nราคารวมอาหารเช้า 2 ท่าน / หลัง`
+    + (extras.length? `\n\nบริการเสริม${extras.map(x=>`\n+ ${x.l} ${fmt(x.a)} บาท`).join("")}` : "")
+    + `\n\n${ACT_TEXT}\n\n✨ จองตรงกับเรา ได้ส่วนลดค่าอาหารและกิจกรรม และคุยกับทีมเราได้โดยตรงตลอดการเข้าพักครับ\nสนใจแบบไหน แจ้งได้เลยนะครับ :))`;
+
+  // ② Closing message: full summary + total + payment + booking details request
+  const close = `${head}\nสรุปการจอง\n` + types.map(v=>`${ROOM_INFO[v].icon}${NAME[v]} Villa × ${sel[v]} หลัง ${fmt(per[v].total)} บาท`).join("\n")
+    + `\n(รวมอาหารเช้า 2 ท่าน / หลัง)${disc?`\n${disc.trim().replace(/[()]/g,"")}`:""}`
+    + extras.map(x=>`\n+ ${x.l} ${fmt(x.a)} บาท`).join("")
+    + `\nรวมทั้งหมด ${fmt(total)} บาท`
+    + `\n\nชำระโดยโอนเข้าบัญชี เลือกได้ 2 แบบครับ\n① โอนเต็ม ${fmt(total)} บาท รับส่วนลดค่าอาหารและกิจกรรม 10% ตลอดการเข้าพัก\n② โอนมัดจำ 50% = ${fmt(Math.round(total/2))} บาท ส่วนที่เหลือชำระตอนเช็คเอาท์ (ลดค่าอาหารและกิจกรรม 5%)`
+    + `\n\n${BANK_TEXT}\nหากชำระเรียบร้อย รบกวนคุณลูกค้าส่งสลิปกลับมาครับ :))`
+    + `\n\n📝 รบกวนขอข้อมูลเพื่อใช้ประกอบการจองครับ\n• ชื่อ - นามสกุล\n• เบอร์โทรศัพท์\n• อีเมล`;
+
+  // upsells
+  const ups=[];
   if(!beyond){
-    const t1=totalFor(villa,i,n+1);
+    const t1=roomsTotal(sel,i,n+1);
     if(t1 && n<14){ const add=t1-roomTotal; ups.push({t:`พักเพิ่มอีก 1 คืน (${n+1} คืน) จ่ายเพิ่มแค่ <b>${fmt(add)}</b>`, m:`ถ้าสะดวกอยู่ต่ออีกสักคืน จะได้พักผ่อนเต็มที่ขึ้นนะครับ และได้ส่วนลดด้วย ${n+1} คืน รวม ${fmt(t1)} บาท เพิ่มจากเดิม ${fmt(add)} บาทครับ${n+1===2?' (ได้ราคา 2 คืน ลด 5% ทุกคืน)':n+1===3?' (ได้ราคา 3 คืนขึ้นไป ลด 10% ทุกคืน)':''} จะได้มีเวลาพักผ่อนเต็มที่ ไม่ต้องรีบเช็คเอาท์ครับ 😊`}); }
-    if(villa==="M"){ const tS=totalFor("S",i,n); if(tS){ const add=tS-roomTotal; ups.push({t:`อัปเกรดเป็น Sunset Pavilion เพิ่ม <b>${fmt(add)}</b>`, m:`อีกทางเลือกนะครับ อัปเกรดเป็น Sunset Pavilion Villa วิลล่าวิวพระอาทิตย์ตก ${n} คืน รวม ${fmt(tS)} บาท เพิ่มจาก Mountain View แค่ ${fmt(add)} บาทครับ เหมาะกับโอกาสพิเศษมากครับ 🌅`}); } }
-    const pkgOK = ci >= new Date(2026,11,1);
-    if(pkgOK){ for(const k of ["FB","AI"]){ const P=PKG[k]; const tp=P[villa]*n; ups.push({t:`${k==="FB"?"Full Board":"All Inclusive"} ${n} คืน รวม <b>${fmt(tp)}</b> (เพิ่ม ${fmt(tp-roomTotal)})`, m:`ถ้าอยากสบาย ไม่ต้องคิดเรื่องอาหาร มีแพ็กเกจ ${P.name} ${vName} Villa ${n} คืน รวม ${fmt(tp)} บาท สำหรับ 2 ท่านครับ`}); } }
+    if(sel.M>0 && nRooms<=2){ const tS=roomsTotal({M:0,S:nRooms},i,n); if(tS){ const add=tS-roomTotal; ups.push({t:`อัปเกรด Mountain เป็น Sunset Pavilion เพิ่ม <b>${fmt(add)}</b>`, m:`อีกทางเลือกนะครับ อัปเกรดเป็น Sunset Pavilion Villa วิลล่าวิวพระอาทิตย์ตก${nRooms>1?` ${nRooms} หลัง`:''} ${n} คืน รวม ${fmt(tS)} บาท เพิ่มแค่ ${fmt(add)} บาทครับ เหมาะกับโอกาสพิเศษมากครับ 🌅`}); } }
+    if(ci >= new Date(2026,11,1)){ for(const k of ["FB","AI"]){ const P=PKG[k]; const tp=(P.M*sel.M+P.S*sel.S)*n; const rooms=types.map(v=>`${NAME[v]} Villa${sel[v]>1?` ${sel[v]} หลัง`:''}`).join(" + "); ups.push({t:`${k==="FB"?"Full Board":"All Inclusive"} ${n} คืน รวม <b>${fmt(tp)}</b> (เพิ่ม ${fmt(tp-roomTotal)})`, m:`ถ้าอยากสบาย ไม่ต้องคิดเรื่องอาหาร มีแพ็กเกจ ${P.name} ${rooms} ${n} คืน รวม ${fmt(tp)} บาท (2 ท่าน / หลัง) ครับ`}); } }
   }
   const upsellHTML = ups.length? `<div class="upsell"><h3>ข้อเสนอเพิ่มยอด (กดคัดลอกแล้วส่งต่อท้าย)</h3>${ups.map((u,k)=>`<div class="up"><span>${u.t}</span><button class="copy sm" type="button" data-up="${k}">คัดลอก</button></div>`).join("")}</div>` : '';
-  document.getElementById("quote").innerHTML = `${status}
-    <div class="quote-total"><span>${plan}${extras.length?" + บริการเสริม":""}</span><strong class="num">${fmt(total)} บาท</strong></div>
+  const msgsHTML = beyond? '' : `<div class="msgs">
+      <div class="msg"><h3>① ข้อความเสนอขาย</h3><p>ช่วงลูกค้ายังเลือกอยู่ · มีรายละเอียดห้อง + กิจกรรม · ยังไม่มีเลขบัญชี</p>
+        <button class="copy" type="button" data-msg="offer">คัดลอกข้อความเสนอขาย</button>
+        <details><summary>ดูข้อความ</summary><textarea class="copybox" id="box-offer" rows="14" readonly></textarea></details></div>
+      <div class="msg close"><h3>② ข้อความปิดดีล</h3><p>ลูกค้าตกลงแล้ว · สรุปยอด + วิธีโอน + ขอชื่อ-สกุล เบอร์ อีเมล</p>
+        <button class="copy fill" type="button" data-msg="close">คัดลอกข้อความปิดดีล</button>
+        <details><summary>ดูข้อความ</summary><textarea class="copybox" id="box-close" rows="14" readonly></textarea></details></div>
+    </div>`;
+  q.innerHTML = `${status}
+    <div class="quote-total"><span>${plan} · ${nRooms} หลัง${extras.length?" + บริการเสริม":""}</span><strong class="num">${fmt(total)} บาท</strong></div>
     <div class="quote-lines">${lines.join("")}</div>
-    ${upsellHTML}
-    ${(!nyMin && !beyond && !full.length)?`<button class="copy" id="copyBtn" type="button">คัดลอกข้อความส่งลูกค้า</button><textarea class="copybox" id="copyBox" rows="12" readonly hidden>${msg}</textarea>`:''}`;
+    ${msgsHTML}
+    ${upsellHTML}`;
+  const MSG={offer, close};
+  for(const k in MSG){ const b=document.getElementById("box-"+k); if(b) b.value=MSG[k]; }
+  document.querySelectorAll("[data-msg]").forEach(btn=>btn.addEventListener("click", async()=>{
+    const k=btn.dataset.msg;
+    try{ await navigator.clipboard.writeText(MSG[k]); btn.textContent="คัดลอกแล้ว ✓"; }
+    catch(e){ const box=document.getElementById("box-"+k); box.closest("details").open=true; box.select(); btn.textContent="กดค้างเพื่อคัดลอกข้อความด้านล่าง"; }
+  }));
   document.querySelectorAll("[data-up]").forEach(b=>b.addEventListener("click", async()=>{ const m=ups[+b.dataset.up].m; try{ await navigator.clipboard.writeText(m); b.textContent="คัดลอกแล้ว"; }catch(e){ prompt("คัดลอกข้อความนี้", m); } }));
-  const btn=document.getElementById("copyBtn");
-  if(btn) btn.addEventListener("click", async()=>{
-    try{ await navigator.clipboard.writeText(msg); btn.textContent="คัดลอกแล้ว"; }
-    catch(e){ const box=document.getElementById("copyBox"); box.hidden=false; box.select(); btn.textContent="กดค้างเพื่อคัดลอกข้อความด้านล่าง"; }
-  });
 }
 
 function init(){
@@ -335,12 +391,11 @@ function init(){
     o.textContent=`${TH_DAY[d.getDay()]} ${d.getDate()} ${TH_MON[d.getMonth()]} ${d.getFullYear()+543}`; ci.appendChild(o); }
   const nt=document.getElementById("nights");
   for(let n=1;n<=14;n++){ const o=document.createElement("option"); o.value=n; o.textContent=n+" คืน"; nt.appendChild(o); }
-  nt.value=2; ci.value=6; // example: Sun 15 Nov, 2 nights
-  ci.addEventListener("change",renderQuote); nt.addEventListener("change",renderQuote);
-  for(const id of ["xbed","xdog","xtr"]) document.getElementById(id).addEventListener("change",renderQuote);
-  const set=v=>{villa=v; document.getElementById("vM").setAttribute("aria-pressed",v==="M"); document.getElementById("vS").setAttribute("aria-pressed",v==="S"); renderQuote();};
-  document.getElementById("vM").addEventListener("click",()=>set("M"));
-  document.getElementById("vS").addEventListener("click",()=>set("S"));
+  const now=new Date(); now.setHours(0,0,0,0);
+  const today=Math.round((now-START)/864e5);
+  nt.value=1; ci.value=Math.min(Math.max(today,0),N-1);
+  document.getElementById("qM").value=1;
+  for(const id of ["ci","nights","qM","qS","xbed","xdog","xtr"]) document.getElementById(id).addEventListener("change",renderQuote);
   renderList(); renderQuote();
 }
 init();
