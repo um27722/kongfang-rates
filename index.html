@@ -66,6 +66,10 @@ select:focus-visible,button:focus-visible{outline:2px solid var(--pine);outline-
 .msg.close{border-color:var(--pine);background:var(--pine-soft)}
 .copy.fill{background:var(--pine);color:var(--surface)}
 .msg details summary{font-size:.8rem;color:var(--muted);cursor:pointer}
+[hidden]{display:none!important}
+.tabs{display:flex;gap:6px;position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0}
+.tabs button{flex:1;font:inherit;font-weight:600;padding:10px 8px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--pine);border-color:var(--pine);color:var(--surface)}
 textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--fg)}
 /* day list */
 .listhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -108,6 +112,11 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
     <p class="sub">สำหรับแอดมินเสนอราคาจองตรง · อัปเดตล่าสุด <span id="updated" class="num">9 พ.ย. 2569</span></p>
   </header>
 
+  <nav class="tabs" role="tablist" aria-label="หมวด">
+    <button type="button" role="tab" id="t-rooms" aria-selected="true" data-tab="rooms">🏡 ราคาห้อง</button>
+    <button type="button" role="tab" id="t-act" aria-selected="false" data-tab="act">🌿 เรทกิจกรรม</button>
+  </nav>
+  <div id="tab-rooms" style="display:flex;flex-direction:column;gap:20px">
   <section class="card ride-card" aria-labelledby="ride-h">
     <h2 id="ride-h">🚐 ลูกค้าต้องการรถรับ-ส่ง → ลงตารางรถ</h2>
     <ol>
@@ -169,25 +178,6 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
     <p class="foot" style="margin:0">แพ็กเกจ All Inclusive รวมรถรับส่งสนามบินแล้ว ไม่ต้องคิดเพิ่ม</p>
   </section>
 
-  <section class="card" aria-labelledby="act-h">
-    <h2 id="act-h">กิจกรรม</h2>
-    <p class="sub" style="margin:0">ราคาเดียวกันทั้งแขกไทยและต่างชาติ · ยังไม่รวม SC 5% · คิดตอนเช็คเอาท์ใน Extra Charges Bill</p>
-    <div class="villas">
-      <div class="v"><div class="vname">ล่องแพไม้ไผ่<br><span class="sub" style="font-weight:400">ไม่เกิน 4 ท่าน/แพ · ประมาณ 1.5 ชม.</span></div><div class="prices num"><b>900</b> บาท / แพ</div></div>
-      <div class="v"><div class="vname">ชมทะเลหมอก (รถไปส่ง)<br><span class="sub" style="font-weight:400">05:30–07:30 · ไปเป็นทริปส่วนตัวต่อบุ๊กกิ้ง ไม่จับกลุ่มรวมกับแขกอื่น · 3–6 ท่าน คนละ 300 · มา 1–2 ท่าน เหมาคัน 800</span></div><div class="prices num"><b>300</b> บาท / ท่าน</div></div>
-      <div class="v"><div class="vname">เก็บส้มตามฤดูกาล<br><span class="sub" style="font-weight:400">1–2 ชม. · ส้มที่เก็บกลับไปคิดตามน้ำหนัก</span></div><div class="prices num"><b>100</b> บาท / ท่าน</div></div>
-      <div class="v"><div class="vname">เดินชมธรรมชาติ<br><span class="sub" style="font-weight:400">ประมาณ 1.5 ชม. · ขั้นต่ำ 2 ท่าน</span></div><div class="prices num"><b>300</b> บาท / ท่าน</div></div>
-      <div class="v"><div class="vname">เดินป่าถ้ำขี้หมี<br><span class="sub" style="font-weight:400">ประมาณ 3 ชม. · ขั้นต่ำ 2 ท่าน</span></div><div class="prices num"><b>450</b> บาท / ท่าน</div></div>
-      <div class="v"><div class="vname">ปิกนิก<br><span class="sub" style="font-weight:400">ชุดปิกนิกพร้อมอาหารว่างและเครื่องดื่ม · ไม่ต้องใช้ไกด์</span></div><div class="prices num"><b>1,290</b> บาท / ชุด (2 ท่าน)</div></div>
-      <div class="v"><div class="vname">ทะเลหมอก + เดินน้ำตก<br><span class="sub" style="font-weight:400">05:30–10:00 · ขั้นต่ำ 2 ท่าน</span></div><div class="prices num"><b>650</b> บาท / ท่าน</div></div>
-    </div>
-    <ul class="rules">
-      <li><b>ไกด์ภาษาอังกฤษ (ลุงสุเทพ):</b> คิดเพิ่ม <b>100 บาท/ชม. ต่อกลุ่ม ขั้นต่ำ 200 บาท</b> → ทะเลหมอก +200 · เก็บส้ม +200 · เดินชมธรรมชาติ +200 · ถ้ำขี้หมี +300 · ทะเลหมอก+น้ำตก +450 · ล่องแพไม่มี</li>
-      <li><b>ลุงสุเทพมีคนเดียว:</b> ช่วงเวลาเดียวกันรับไกด์ภาษาอังกฤษได้ <b>1 กลุ่ม</b> · ถ้าแขกต่างชาติ 2 วิลล่าอยากไปเวลาเดียวกัน ถามว่าไปรวมกลุ่มได้ไหม (หารค่าไกด์กัน) หรือเสนอเวลาอื่น · เช็คคิวก่อนรับจองทุกครั้ง</li>
-      <li><b>แขกไทย</b> ไปกับน้าดุล (เก็บส้ม: ป้าเจ้าของสวนพาเก็บ) ไม่มีค่าไกด์เพิ่ม</li>
-    </ul>
-  </section>
-
   <section class="card" aria-labelledby="sell-h">
     <h2 id="sell-h">ขายเพิ่ม: เสนอทางเลือกทุกครั้ง</h2>
     <ul class="rules">
@@ -226,6 +216,70 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
   </section>
 
   <p class="foot">Mountain View Villa และ Sunset Pavilion Villa มีอย่างละ 2 หลัง · ราคาในหน้านี้เป็นราคาจองตรงคร่าวๆ ถึง 28 ก.พ. 2570 (Value Season) · มี.ค.–พ.ค. เป็น Low season ราคาจะอัปเดตทีหลัง ถ้าลูกค้าถามช่วงนั้นให้ถามอั้ม · ห้องว่างให้ดูใน Little Hotelier เท่านั้น</p>
+  </div>
+  <div id="tab-act" hidden style="display:flex;flex-direction:column;gap:20px">
+  <section class="card" aria-labelledby="act-h">
+    <h2 id="act-h">กิจกรรม</h2>
+    <p class="sub" style="margin:0">เริ่ม 1 ธ.ค. 2569 · ราคาเดียวกันทั้งแขกไทยและต่างชาติ · ยังไม่รวม SC 5% · คิดตอนเช็คเอาท์ใน Extra Charges Bill</p>
+    <div class="villas">
+      <div class="v"><div class="vname">ชมทะเลหมอก (รถไปส่ง)<br><span class="sub" style="font-weight:400">05:30–07:30 · มา 1–2 ท่าน เหมาคัน 800 · 3 ท่านขึ้นไป คนละ 300 · 2 วิลล่าแชร์รถได้ถ้าทั้งคู่โอเค · ปิดรับ 18:00 ของวันก่อน</span></div><div class="prices num"><b>300</b> บาท / ท่าน<br><span>ขั้นต่ำ 800 / คัน</span></div></div>
+      <div class="v"><div class="vname">ทะเลหมอก + เดินน้ำตก<br><span class="sub" style="font-weight:400">05:30–10:00 · ขั้นต่ำ 2 ท่าน</span></div><div class="prices num"><b>650</b> บาท / ท่าน</div></div>
+      <div class="v"><div class="vname">เดินป่า (เดินชมธรรมชาติ)<br><span class="sub" style="font-weight:400">ประมาณ 1.5 ชม. · ไม่เกิน 6 ท่าน · เดินนานขึ้น +200 ต่อชั่วโมง</span></div><div class="prices num"><b>600</b> บาท / กลุ่ม</div></div>
+      <div class="v"><div class="vname">เดินป่าถ้ำขี้หมี<br><span class="sub" style="font-weight:400">ประมาณ 4 ชม. · ไม่เกิน 6 ท่าน · ไม่ต้องเสนอเอง รับเมื่อแขกขอ</span></div><div class="prices num"><b>1,200</b> บาท / กลุ่ม</div></div>
+      <div class="v"><div class="vname">ล่องแพไม้ไผ่<br><span class="sub" style="font-weight:400">ไม่เกิน 4 ท่าน/แพ · ประมาณ 1.5 ชม. · ไม่มีไกด์</span></div><div class="prices num"><b>900</b> บาท / แพ</div></div>
+      <div class="v"><div class="vname">เก็บส้มตามฤดูกาล<br><span class="sub" style="font-weight:400">1–2 ชม. · ส้มที่เก็บกลับไปคิดตามน้ำหนัก</span></div><div class="prices num"><b>100</b> บาท / ท่าน</div></div>
+      <div class="v"><div class="vname">ปิกนิก<br><span class="sub" style="font-weight:400">ชุดปิกนิกพร้อมอาหารว่างและเครื่องดื่ม · ไม่ต้องใช้ไกด์</span></div><div class="prices num"><b>1,290</b> บาท / ชุด (2 ท่าน)</div></div>
+    </div>
+    <p class="foot" style="margin:0">ก่อน 1 ธ.ค.: เดินป่า 300/ท่าน (ขั้นต่ำ 2) · ถ้ำขี้หมี 450/ท่าน (ขั้นต่ำ 2) · อย่างอื่นราคาเท่าเดิม</p>
+  </section>
+
+  <section class="card" aria-labelledby="guide-h">
+    <h2 id="guide-h">ไกด์</h2>
+    <ul class="rules">
+      <li><b>แขกไทย</b> ไปกับน้าดุล (เก็บส้ม: ป้าเจ้าของสวนพาเก็บ) <b>ไม่คิดค่าไกด์เพิ่ม</b></li>
+      <li><b>แขกต่างชาติ → ไกด์ภาษาอังกฤษ (ลุงสุเทพ)</b> คิดเพิ่ม <b>100 บาท/ชม. ต่อกลุ่ม ขั้นต่ำ 200</b> ตามเวลาจริง</li>
+    </ul>
+    <div class="villas">
+      <div class="v"><div class="vname">เดินป่า 1.5 ชม.</div><div class="prices num"><b>+200</b></div></div>
+      <div class="v"><div class="vname">ทะเลหมอก (แบบเดินลง) / เก็บส้ม</div><div class="prices num"><b>+200</b></div></div>
+      <div class="v"><div class="vname">ถ้ำขี้หมี ~4 ชม.</div><div class="prices num"><b>+400</b></div></div>
+      <div class="v"><div class="vname">ทะเลหมอก + น้ำตก</div><div class="prices num"><b>+450</b></div></div>
+      <div class="v"><div class="vname">ล่องแพ / ปิกนิก</div><div class="prices num"><span>ไม่มีไกด์</span></div></div>
+    </div>
+    <ul class="rules">
+      <li><b>ลุงสุเทพมีคนเดียว:</b> ช่วงเวลาเดียวกันรับได้ <b>1 กลุ่ม</b> · ถ้าแขกต่างชาติ 2 วิลล่าอยากไปเวลาเดียวกัน ถามว่าไปรวมกลุ่มได้ไหม (หารค่าไกด์กัน) หรือเสนอเวลาอื่น · เช็คคิวก่อนรับจองทุกครั้ง</li>
+    </ul>
+  </section>
+
+  <section class="card" aria-labelledby="well-h">
+    <h2 id="well-h">นวดและ Wellness</h2>
+    <p class="sub" style="margin:0">ราคาต่อท่าน · ยังไม่รวม SC 5% · หมอนวดมีคนเดียว (พี่จันทร์) จองล่วงหน้า</p>
+    <div class="villas">
+      <div class="v"><div class="vname">นวดไทย</div><div class="prices num"><b>650</b> / <b>890</b> / <b>1,150</b><br><span>60 / 90 / 120 นาที</span></div></div>
+      <div class="v"><div class="vname">นวดน้ำมันอโรมา</div><div class="prices num"><b>790</b> / <b>1,090</b> / <b>1,390</b><br><span>60 / 90 / 120 นาที</span></div></div>
+      <div class="v"><div class="vname">นวดประคบสมุนไพร</div><div class="prices num"><b>790</b> / <b>1,090</b> / <b>1,390</b><br><span>60 / 90 / 120 นาที</span></div></div>
+      <div class="v"><div class="vname">Ice Bath ส่วนตัว 30 นาที</div><div class="prices num"><b>490</b> / <b>790</b><br><span>1 ท่าน / 2 ท่าน</span></div></div>
+    </div>
+    <p class="foot" style="margin:0">Sound Healing ปีนี้ยังไม่เปิดขาย</p>
+  </section>
+
+  <section class="card" aria-labelledby="food-h">
+    <h2 id="food-h">อาหารแบบประสบการณ์</h2>
+    <p class="sub" style="margin:0">ยังไม่รวม SC 10%</p>
+    <div class="villas">
+      <div class="v"><div class="vname">หมูกระทะ</div><div class="prices num"><b>699</b> บาท</div></div>
+      <div class="v"><div class="vname">ขันโตก</div><div class="prices num"><b>799</b> บาท</div></div>
+      <div class="v"><div class="vname">บาร์บีคิวเสียบไม้</div><div class="prices num"><b>1,490</b> บาท / ชุด (2 ท่าน)</div></div>
+      <div class="v"><div class="vname">คลาสทำอาหาร</div><div class="prices num"><b>990</b> บาท / ท่าน</div></div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="free-h">
+    <h2 id="free-h">ฟรีสำหรับแขกที่พัก</h2>
+    <p style="margin:0">จักรยาน · Beach Tennis · แบดมินตัน · ฟุตบอล · เปตอง · บอร์ดเกม · กองไฟ</p>
+    <p class="foot" style="margin:0">ส่วนลดค่าอาหารและกิจกรรม: จองตรงลด 5% · จองตรงโอนเต็มลด 10% · OTA ไม่ได้ส่วนลด</p>
+  </section>
+  </div>
 </div>
 
 <script>
@@ -293,7 +347,7 @@ const ROOM_INFO = {
   M:{icon:"⛰️", lines:["วิวภูเขา ห้องกว้าง เป็นส่วนตัว","ห้องอาบน้ำแบบ walk-in shower · เตียงใหญ่ 6 ฟุต","เครื่องอำนวยความสะดวกครบ"]},
   S:{icon:"🌅", lines:["ห้องทรงสามเหลี่ยม วิวพระอาทิตย์ตก เป็นส่วนตัวที่สุด","มี dining area โซนนั่งเล่น ทานข้าวแบบ private","ห้องอาบน้ำแบบ walk-in shower · เตียงใหญ่ 6 ฟุต","เครื่องอำนวยความสะดวกครบ"]}
 };
-const ACT_TEXT = "🌟กิจกรรมในที่พัก\n• เล่นบอร์ดเกม / ตีแบต / ปั่นจักรยาน (ฟรี)\n• ล่องแพ / เดินป่า / ชมทะเลหมอก / นวด (มีค่าใช้จ่ายเพิ่มเติม)";
+const ACT_TEXT = "🌟กิจกรรมในที่พัก\n• ปั่นจักรยาน / ตีแบต / Beach Tennis / เปตอง / บอร์ดเกม / กองไฟ (ฟรี)\n• ล่องแพ / เดินป่า / ชมทะเลหมอก / นวด (มีค่าใช้จ่ายเพิ่มเติม)";
 const BANK_TEXT = "ธนาคารกสิกรไทย\nชื่อบัญชี บริษัท เอ็นวี ออลล์ จำกัด\nเลขที่บัญชี 221-1-70170-9";
 const dstr = d => `${d.getDate()} ${TH_MON[d.getMonth()]}`;
 
@@ -397,6 +451,9 @@ function init(){
   document.getElementById("qM").value=1;
   for(const id of ["ci","nights","qM","qS","xbed","xdog","xtr"]) document.getElementById(id).addEventListener("change",renderQuote);
   renderList(); renderQuote();
+  const showTab=t=>{ for(const k of ["rooms","act"]){ document.getElementById("tab-"+k).hidden = k!==t; document.getElementById("t-"+k).setAttribute("aria-selected", k===t); } };
+  document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{ showTab(b.dataset.tab); history.replaceState(null,"",b.dataset.tab==="act"?"#act":location.pathname); window.scrollTo(0,0); }));
+  showTab(location.hash==="#act"?"act":"rooms");
 }
 init();
 </script>
