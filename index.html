@@ -67,8 +67,9 @@ select:focus-visible,button:focus-visible{outline:2px solid var(--pine);outline-
 .copy.fill{background:var(--pine);color:var(--surface)}
 .msg details summary{font-size:.8rem;color:var(--muted);cursor:pointer}
 [hidden]{display:none!important}
+.tabpane{display:flex;flex-direction:column;gap:20px}
 .tabs{display:flex;gap:6px;position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0}
-.tabs button{flex:1;font:inherit;font-weight:600;padding:10px 8px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.tabs button{flex:1;word-break:keep-all;font:inherit;font-size:.86rem;font-weight:600;padding:10px 4px;line-height:1.25;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
 .tabs button[aria-selected="true"]{background:var(--pine);border-color:var(--pine);color:var(--surface)}
 textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--fg)}
 /* day list */
@@ -113,85 +114,11 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
   </header>
 
   <nav class="tabs" role="tablist" aria-label="หมวด">
-    <button type="button" role="tab" id="t-rooms" aria-selected="true" data-tab="rooms">🏡 ราคาห้อง</button>
-    <button type="button" role="tab" id="t-act" aria-selected="false" data-tab="act">🌿 เรทกิจกรรม</button>
+    <button type="button" role="tab" id="t-calc" aria-selected="true" data-tab="calc">🧮 คิดราคา</button>
+    <button type="button" role="tab" id="t-act" aria-selected="false" data-tab="act">🌿 กิจกรรม</button>
+    <button type="button" role="tab" id="t-rules" aria-selected="false" data-tab="rules">📋 กติกา</button>
   </nav>
-  <div id="tab-rooms" style="display:flex;flex-direction:column;gap:20px">
-  <section class="card ride-card" aria-labelledby="ride-h">
-    <h2 id="ride-h">🚐 ลูกค้าต้องการรถรับ-ส่ง → ลงตารางรถ</h2>
-    <ol>
-      <li>ถามลูกค้า: <b>วันไหน · รับหรือส่ง · เที่ยวบิน + เวลาเครื่องลง/ออก · กี่คน กี่กระเป๋า</b> (ถ้าไม่ใช่สนามบิน ถามที่รับ-ส่ง)</li>
-      <li>กดปุ่มด้านล่าง กรอกข้อมูลลงตารางรถ ระบบคิดเวลารถออกให้เอง ถ้า X-Trail ไม่ว่าง ระบบจะบอก และให้เลือกรถน้องเข็มแทน (รออั้มอนุมัติ)</li>
-      <li>ใน Little Hotelier พิมพ์โน้ตสั้นๆ ที่การจองนั้นพอ เช่น <b>"🚙 รับ 11:45 TG102 (ดูตารางรถ)"</b></li>
-    </ol>
-    <div class="ride-btns"><a class="ride-btn" href="https://kongfang-ops.netlify.app/?tab=ride&amp;add=guest" target="_blank" rel="noopener">+ ลงรับ-ส่งแขก</a><a class="ride-btn alt" href="https://kongfang-ops.netlify.app/?tab=ride" target="_blank" rel="noopener">ดูตารางรถ</a></div>
-    <p class="sub" style="margin:8px 0 0">ใช้ครั้งแรก: ล็อกอินบัญชีทีม (ขอจากอั้ม/เบลล์) แล้วแตะชื่อ "ขนุน" ครั้งต่อไปเปิดแล้วเข้าได้เลย · ลูกค้าจาก OTA ขอรถก็ลงที่นี่เหมือนกัน</p>
-  </section>
-
-  <section class="card" aria-labelledby="rules-h">
-    <h2 id="rules-h">กติกาเสนอราคา</h2>
-    <ul class="rules">
-      <li>ราคาในหน้านี้คือ <b>ราคาจองตรง ต่อห้อง ต่อคืน</b> รวมอาหารเช้า 2 ท่าน</li>
-      <li>พัก 2 คืน ใช้ราคา "2 คืน" · พัก 3 คืนขึ้นไป ใช้ราคา "3+ คืน" ทุกคืน</li>
-      <li><b>ห้ามลดต่ำกว่าราคาในตาราง</b> ถ้าลูกค้าขอส่วนลดเพิ่ม ให้ถามอั้มก่อน</li>
-      <li><b>เช็คห้องว่างใน Little Hotelier ก่อนเสนอราคาทุกครั้ง</b> หน้านี้มีแค่ราคา ไม่มีข้อมูลห้องว่าง</li>
-      <li><b>ส่วนลดค่าอาหารและกิจกรรมให้เฉพาะแขกที่จองตรง:</b> จองตรงปกติลด <b>5%</b> · จองตรงแบบ Non-refundable (จ่ายเต็มตอนจอง) ลด <b>10%</b> · แขกจาก Agoda, Booking.com, Trip.com ไม่ได้ส่วนลดนี้ (ดูชื่อเรทในการจองใน Little Hotelier)</li>
-      <li><b>ลูกค้าจองกับขนุน (LINE/โทร): เน้นให้โอนเข้าบัญชี</b> ได้เงินทันที ไม่เสียค่าธรรมเนียมบัตร · ตัดบัตรเฉพาะลูกค้าที่ขอเท่านั้น
-        <br>• <b>โอนเต็มตอนจอง</b> → ลดค่าอาหารและกิจกรรม <b>10%</b>
-        <br>• <b>โอนมัดจำ 50%</b> (ส่วนที่เหลือจ่ายตอนเช็คเอาท์รวมค่าอาหาร) → ลด <b>5%</b> ตามจองตรงปกติ
-        <br>ขอสลิปทุกครั้ง
-        <div class="bank">ธนาคารกสิกรไทย · บริษัท เอ็นวี ออลล์ จำกัด · <b class="num">221-1-70170-9</b></div></li>
-      <li><b>ลูกค้าจองเองผ่านเว็บ:</b> ระบบตัดบัตรเอง (เรทปกติมัดจำ 50% ตอนจอง ที่เหลือตัด 7 วันก่อนเข้าพัก · Non-refundable ตัด 100% ตอนจอง ไม่คืนเงิน) ขนุนไม่ต้องเก็บเงินเพิ่ม</li>
-      <li>เช็คอิน 15:00 · เช็คเอาท์ 12:00</li>
-      <li><b>ลูกค้าที่จองกับขนุนขอยกเลิก</b> → ไม่คืนเงิน เก็บเป็นเครดิตเข้าพักครั้งหน้า · ไม่แน่ใจให้ถามอั้ม</li>
-      <li><b>ปีใหม่ 24 ธ.ค. – 2 ม.ค.:</b> Mountain View 5,990 · Sunset Pavilion 7,490 ต่อคืน (Sunset 24–26 ธ.ค. = 8,290) · 2 คืนลด 5%, 3+ คืนลด 10% ตามปกติ</li>
-      <li><b>ราคาปรับรายวัน (9 พ.ย.):</b> บางวันราคาขึ้นเพราะเหลือห้องน้อย หรือลดเพราะใกล้วันแล้วยังว่าง ใช้ราคาในตาราง/ช่องคิดราคาด้านล่างเสมอ</li>
-    </ul>
-  </section>
-
-  <section class="card" aria-labelledby="why-h">
-    <h2 id="why-h">บอกลูกค้า: จองตรงได้อะไรมากกว่า</h2>
-    <ul class="rules">
-      <li><b>ราคาไม่แพงกว่า Agoda / Booking</b> แต่ได้สิทธิพิเศษที่ OTA ไม่มี</li>
-      <li><b>ลด 5% ค่าอาหารและกิจกรรมตลอดการเข้าพัก</b> เฉพาะจองตรง · ถ้าโอนเต็มตอนจอง ลด <b>10%</b></li>
-      <li><b>คุยกับทีมเราโดยตรง</b> ช่วยวางแผนทริป จัดกิจกรรม แจ้งคำขอพิเศษได้ก่อนมาถึง</li>
-    </ul>
-  </section>
-
-  <section class="card" aria-labelledby="pkg-h">
-    <h2 id="pkg-h">แพ็กเกจอาหารและกิจกรรม</h2>
-    <p class="sub" style="margin:0">ราคาต่อห้อง ต่อคืน สำหรับ 2 ท่าน · เริ่ม 1 ธ.ค. 2569</p>
-    <div class="villas">
-      <div class="v"><div class="vname">Full Board<br><span class="sub" style="font-weight:400">อาหาร 3 มื้อ ไม่รวมแอลกอฮอล์ ไม่รวมรถรับส่ง</span></div><div class="prices num"><b>8,990</b> / <b>9,990</b><br><span>Mountain / Sunset</span></div></div>
-      <div class="v"><div class="vname">All Inclusive + Activities<br><span class="sub" style="font-weight:400">3 มื้อ + free-flow แอลกอฮอล์ + กิจกรรมวันละ 1 อย่าง + รับส่งสนามบินเชียงใหม่</span></div><div class="prices num"><b>11,900</b> / <b>13,900</b><br><span>Mountain / Sunset</span></div></div>
-    </div>
-    <p class="foot" style="margin:0">เดือน พ.ย. 2569 แพ็กเกจ All Inclusive ยังเป็น 16,900 ต่อคืน</p>
-  </section>
-
-  <section class="card" aria-labelledby="extra-h">
-    <h2 id="extra-h">ค่าบริการเสริม</h2>
-    <div class="villas">
-      <div class="v"><div class="vname">รถรับส่งสนามบินเชียงใหม่ (ไป-กลับ)</div><div class="prices num"><b>2,900</b> บาท</div></div>
-      <div class="v"><div class="vname">เตียงเสริม</div><div class="prices num"><b>900</b> บาท / คืน</div></div>
-      <div class="v"><div class="vname">น้องหมา</div><div class="prices num"><b>750</b> บาท / ตัว / คืน</div></div>
-    </div>
-    <p class="foot" style="margin:0">แพ็กเกจ All Inclusive รวมรถรับส่งสนามบินแล้ว ไม่ต้องคิดเพิ่ม</p>
-  </section>
-
-  <section class="card" aria-labelledby="sell-h">
-    <h2 id="sell-h">ขายเพิ่ม: เสนอทางเลือกทุกครั้ง</h2>
-    <ul class="rules">
-      <li><b>ทุกครั้งที่ส่งราคา ให้เสนอทางเลือกเพิ่มอย่างน้อย 1 อย่าง</b> ในช่องคิดราคามีปุ่มคัดลอกข้อความเสนอให้แล้ว</li>
-      <li><b>พักเพิ่ม:</b> ไม่ต้องคะยั้นคะยอ แค่บอกเบาๆ ว่าถ้าพักเพิ่มจะได้พักผ่อนเต็มที่ และได้ส่วนลดด้วย (2 คืนลด 5% · 3 คืนขึ้นไปลด 10% ทุกคืน)</li>
-      <li><b>คู่รัก / ฮันนีมูน / วันเกิด / ครบรอบ</b> → เสนออัปเกรดเป็น Sunset Pavilion</li>
-      <li><b>ลูกค้าไม่มีรถ หรือบินมาเชียงใหม่</b> → เสนอ All Inclusive (มีรับส่งสนามบิน + กิจกรรมวันละ 1 อย่าง) · เริ่ม 1 ธ.ค.</li>
-      <li><b>ลูกค้าบินมาแต่ไม่เอาแพ็กเกจ</b> → เสนอรถรับส่งสนามบิน ไป-กลับ 2,900 บาท · <b>มา 3 คน</b> → เสนอเตียงเสริม 900 บาท/คืน · <b>มีน้องหมา</b> → 750 บาท/ตัว/คืน</li>
-      <li><b>ลูกค้าถามเรื่องอาหาร / ไม่อยากออกไปหาร้าน</b> → เสนอ Full Board (อาหาร 3 มื้อ) · เริ่ม 1 ธ.ค.</li>
-      <li><b>ชวนโอนเต็มทุกครั้ง</b> → ลูกค้าได้ส่วนลดอาหารและกิจกรรม 10% (แทน 5%) เราได้เงินครบเลย</li>
-      <li>ห้ามลดราคาห้องเองนอกจากนี้ ถ้าลูกค้าต่อราคา ให้เสนอพักเพิ่มหรือแพ็กเกจแทน หรือถามอั้ม</li>
-    </ul>
-  </section>
-
+  <div id="tab-calc" class="tabpane">
   <section class="card" aria-labelledby="calc-h">
     <h2 id="calc-h">คิดราคาให้ลูกค้า</h2>
     <p class="sub" style="margin:0">เลือกได้ทั้ง 2 แบบพร้อมกัน · ช่วงเสนอขายใช้ข้อความ <b>① เสนอขาย</b> · ลูกค้าตกลงแล้วใช้ข้อความ <b>② ปิดดีล</b></p>
@@ -217,7 +144,27 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
 
   <p class="foot">Mountain View Villa และ Sunset Pavilion Villa มีอย่างละ 2 หลัง · ราคาในหน้านี้เป็นราคาจองตรงคร่าวๆ ถึง 28 ก.พ. 2570 (Value Season) · มี.ค.–พ.ค. เป็น Low season ราคาจะอัปเดตทีหลัง ถ้าลูกค้าถามช่วงนั้นให้ถามอั้ม · ห้องว่างให้ดูใน Little Hotelier เท่านั้น</p>
   </div>
-  <div id="tab-act" hidden style="display:flex;flex-direction:column;gap:20px">
+  <div id="tab-act" class="tabpane" hidden>
+  <section class="card" aria-labelledby="pkg-h">
+    <h2 id="pkg-h">แพ็กเกจอาหารและกิจกรรม</h2>
+    <p class="sub" style="margin:0">ราคาต่อห้อง ต่อคืน สำหรับ 2 ท่าน · เริ่ม 1 ธ.ค. 2569</p>
+    <div class="villas">
+      <div class="v"><div class="vname">Full Board<br><span class="sub" style="font-weight:400">อาหาร 3 มื้อ ไม่รวมแอลกอฮอล์ ไม่รวมรถรับส่ง</span></div><div class="prices num"><b>8,990</b> / <b>9,990</b><br><span>Mountain / Sunset</span></div></div>
+      <div class="v"><div class="vname">All Inclusive + Activities<br><span class="sub" style="font-weight:400">3 มื้อ + free-flow แอลกอฮอล์ + กิจกรรมวันละ 1 อย่าง + รับส่งสนามบินเชียงใหม่</span></div><div class="prices num"><b>11,900</b> / <b>13,900</b><br><span>Mountain / Sunset</span></div></div>
+    </div>
+    <p class="foot" style="margin:0">เดือน พ.ย. 2569 แพ็กเกจ All Inclusive ยังเป็น 16,900 ต่อคืน</p>
+  </section>
+
+  <section class="card" aria-labelledby="extra-h">
+    <h2 id="extra-h">ค่าบริการเสริม</h2>
+    <div class="villas">
+      <div class="v"><div class="vname">รถรับส่งสนามบินเชียงใหม่ (ไป-กลับ)</div><div class="prices num"><b>2,900</b> บาท</div></div>
+      <div class="v"><div class="vname">เตียงเสริม</div><div class="prices num"><b>900</b> บาท / คืน</div></div>
+      <div class="v"><div class="vname">น้องหมา</div><div class="prices num"><b>750</b> บาท / ตัว / คืน</div></div>
+    </div>
+    <p class="foot" style="margin:0">แพ็กเกจ All Inclusive รวมรถรับส่งสนามบินแล้ว ไม่ต้องคิดเพิ่ม</p>
+  </section>
+
   <section class="card" aria-labelledby="act-h">
     <h2 id="act-h">กิจกรรม</h2>
     <p class="sub" style="margin:0">เริ่ม 1 ธ.ค. 2569 · ราคาเดียวกันทั้งแขกไทยและต่างชาติ · ยังไม่รวม SC 5% · คิดตอนเช็คเอาท์ใน Extra Charges Bill</p>
@@ -279,6 +226,64 @@ textarea.copybox{width:100%;font:inherit;font-size:.85rem;border:1px solid var(-
     <p style="margin:0">จักรยาน · Beach Tennis · แบดมินตัน · ฟุตบอล · เปตอง · บอร์ดเกม · กองไฟ</p>
     <p class="foot" style="margin:0">ส่วนลดค่าอาหารและกิจกรรม: จองตรงลด 5% · จองตรงโอนเต็มลด 10% · OTA ไม่ได้ส่วนลด</p>
   </section>
+
+  </div>
+  <div id="tab-rules" class="tabpane" hidden>
+  <section class="card ride-card" aria-labelledby="ride-h">
+    <h2 id="ride-h">🚐 ลูกค้าต้องการรถรับ-ส่ง → ลงตารางรถ</h2>
+    <ol>
+      <li>ถามลูกค้า: <b>วันไหน · รับหรือส่ง · เที่ยวบิน + เวลาเครื่องลง/ออก · กี่คน กี่กระเป๋า</b> (ถ้าไม่ใช่สนามบิน ถามที่รับ-ส่ง)</li>
+      <li>กดปุ่มด้านล่าง กรอกข้อมูลลงตารางรถ ระบบคิดเวลารถออกให้เอง ถ้า X-Trail ไม่ว่าง ระบบจะบอก และให้เลือกรถน้องเข็มแทน (รออั้มอนุมัติ)</li>
+      <li>ใน Little Hotelier พิมพ์โน้ตสั้นๆ ที่การจองนั้นพอ เช่น <b>"🚙 รับ 11:45 TG102 (ดูตารางรถ)"</b></li>
+    </ol>
+    <div class="ride-btns"><a class="ride-btn" href="https://kongfang-ops.netlify.app/?tab=ride&amp;add=guest" target="_blank" rel="noopener">+ ลงรับ-ส่งแขก</a><a class="ride-btn alt" href="https://kongfang-ops.netlify.app/?tab=ride" target="_blank" rel="noopener">ดูตารางรถ</a></div>
+    <p class="sub" style="margin:8px 0 0">ใช้ครั้งแรก: ล็อกอินบัญชีทีม (ขอจากอั้ม/เบลล์) แล้วแตะชื่อ "ขนุน" ครั้งต่อไปเปิดแล้วเข้าได้เลย · ลูกค้าจาก OTA ขอรถก็ลงที่นี่เหมือนกัน</p>
+  </section>
+
+  <section class="card" aria-labelledby="rules-h">
+    <h2 id="rules-h">กติกาเสนอราคา</h2>
+    <ul class="rules">
+      <li>ราคาในหน้านี้คือ <b>ราคาจองตรง ต่อห้อง ต่อคืน</b> รวมอาหารเช้า 2 ท่าน</li>
+      <li>พัก 2 คืน ใช้ราคา "2 คืน" · พัก 3 คืนขึ้นไป ใช้ราคา "3+ คืน" ทุกคืน</li>
+      <li><b>ห้ามลดต่ำกว่าราคาในตาราง</b> ถ้าลูกค้าขอส่วนลดเพิ่ม ให้ถามอั้มก่อน</li>
+      <li><b>เช็คห้องว่างใน Little Hotelier ก่อนเสนอราคาทุกครั้ง</b> หน้านี้มีแค่ราคา ไม่มีข้อมูลห้องว่าง</li>
+      <li><b>ส่วนลดค่าอาหารและกิจกรรมให้เฉพาะแขกที่จองตรง:</b> จองตรงปกติลด <b>5%</b> · จองตรงแบบ Non-refundable (จ่ายเต็มตอนจอง) ลด <b>10%</b> · แขกจาก Agoda, Booking.com, Trip.com ไม่ได้ส่วนลดนี้ (ดูชื่อเรทในการจองใน Little Hotelier)</li>
+      <li><b>ลูกค้าจองกับขนุน (LINE/โทร): เน้นให้โอนเข้าบัญชี</b> ได้เงินทันที ไม่เสียค่าธรรมเนียมบัตร · ตัดบัตรเฉพาะลูกค้าที่ขอเท่านั้น
+        <br>• <b>โอนเต็มตอนจอง</b> → ลดค่าอาหารและกิจกรรม <b>10%</b>
+        <br>• <b>โอนมัดจำ 50%</b> (ส่วนที่เหลือจ่ายตอนเช็คเอาท์รวมค่าอาหาร) → ลด <b>5%</b> ตามจองตรงปกติ
+        <br>ขอสลิปทุกครั้ง
+        <div class="bank">ธนาคารกสิกรไทย · บริษัท เอ็นวี ออลล์ จำกัด · <b class="num">221-1-70170-9</b></div></li>
+      <li><b>ลูกค้าจองเองผ่านเว็บ:</b> ระบบตัดบัตรเอง (เรทปกติมัดจำ 50% ตอนจอง ที่เหลือตัด 7 วันก่อนเข้าพัก · Non-refundable ตัด 100% ตอนจอง ไม่คืนเงิน) ขนุนไม่ต้องเก็บเงินเพิ่ม</li>
+      <li>เช็คอิน 15:00 · เช็คเอาท์ 12:00</li>
+      <li><b>ลูกค้าที่จองกับขนุนขอยกเลิก</b> → ไม่คืนเงิน เก็บเป็นเครดิตเข้าพักครั้งหน้า · ไม่แน่ใจให้ถามอั้ม</li>
+      <li><b>ปีใหม่ 24 ธ.ค. – 2 ม.ค.:</b> Mountain View 5,990 · Sunset Pavilion 7,490 ต่อคืน (Sunset 24–26 ธ.ค. = 8,290) · 2 คืนลด 5%, 3+ คืนลด 10% ตามปกติ</li>
+      <li><b>ราคาปรับรายวัน (9 พ.ย.):</b> บางวันราคาขึ้นเพราะเหลือห้องน้อย หรือลดเพราะใกล้วันแล้วยังว่าง ใช้ราคาในตาราง/ช่องคิดราคาด้านล่างเสมอ</li>
+    </ul>
+  </section>
+
+  <section class="card" aria-labelledby="why-h">
+    <h2 id="why-h">บอกลูกค้า: จองตรงได้อะไรมากกว่า</h2>
+    <ul class="rules">
+      <li><b>ราคาไม่แพงกว่า Agoda / Booking</b> แต่ได้สิทธิพิเศษที่ OTA ไม่มี</li>
+      <li><b>ลด 5% ค่าอาหารและกิจกรรมตลอดการเข้าพัก</b> เฉพาะจองตรง · ถ้าโอนเต็มตอนจอง ลด <b>10%</b></li>
+      <li><b>คุยกับทีมเราโดยตรง</b> ช่วยวางแผนทริป จัดกิจกรรม แจ้งคำขอพิเศษได้ก่อนมาถึง</li>
+    </ul>
+  </section>
+
+  <section class="card" aria-labelledby="sell-h">
+    <h2 id="sell-h">ขายเพิ่ม: เสนอทางเลือกทุกครั้ง</h2>
+    <ul class="rules">
+      <li><b>ทุกครั้งที่ส่งราคา ให้เสนอทางเลือกเพิ่มอย่างน้อย 1 อย่าง</b> ในช่องคิดราคามีปุ่มคัดลอกข้อความเสนอให้แล้ว</li>
+      <li><b>พักเพิ่ม:</b> ไม่ต้องคะยั้นคะยอ แค่บอกเบาๆ ว่าถ้าพักเพิ่มจะได้พักผ่อนเต็มที่ และได้ส่วนลดด้วย (2 คืนลด 5% · 3 คืนขึ้นไปลด 10% ทุกคืน)</li>
+      <li><b>คู่รัก / ฮันนีมูน / วันเกิด / ครบรอบ</b> → เสนออัปเกรดเป็น Sunset Pavilion</li>
+      <li><b>ลูกค้าไม่มีรถ หรือบินมาเชียงใหม่</b> → เสนอ All Inclusive (มีรับส่งสนามบิน + กิจกรรมวันละ 1 อย่าง) · เริ่ม 1 ธ.ค.</li>
+      <li><b>ลูกค้าบินมาแต่ไม่เอาแพ็กเกจ</b> → เสนอรถรับส่งสนามบิน ไป-กลับ 2,900 บาท · <b>มา 3 คน</b> → เสนอเตียงเสริม 900 บาท/คืน · <b>มีน้องหมา</b> → 750 บาท/ตัว/คืน</li>
+      <li><b>ลูกค้าถามเรื่องอาหาร / ไม่อยากออกไปหาร้าน</b> → เสนอ Full Board (อาหาร 3 มื้อ) · เริ่ม 1 ธ.ค.</li>
+      <li><b>ชวนโอนเต็มทุกครั้ง</b> → ลูกค้าได้ส่วนลดอาหารและกิจกรรม 10% (แทน 5%) เราได้เงินครบเลย</li>
+      <li>ห้ามลดราคาห้องเองนอกจากนี้ ถ้าลูกค้าต่อราคา ให้เสนอพักเพิ่มหรือแพ็กเกจแทน หรือถามอั้ม</li>
+    </ul>
+  </section>
+
   </div>
 </div>
 
@@ -451,9 +456,9 @@ function init(){
   document.getElementById("qM").value=1;
   for(const id of ["ci","nights","qM","qS","xbed","xdog","xtr"]) document.getElementById(id).addEventListener("change",renderQuote);
   renderList(); renderQuote();
-  const showTab=t=>{ for(const k of ["rooms","act"]){ document.getElementById("tab-"+k).hidden = k!==t; document.getElementById("t-"+k).setAttribute("aria-selected", k===t); } };
-  document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{ showTab(b.dataset.tab); history.replaceState(null,"",b.dataset.tab==="act"?"#act":location.pathname); window.scrollTo(0,0); }));
-  showTab(location.hash==="#act"?"act":"rooms");
+  const showTab=t=>{ for(const k of ["calc","act","rules"]){ document.getElementById("tab-"+k).hidden = k!==t; document.getElementById("t-"+k).setAttribute("aria-selected", k===t); } };
+  document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{ showTab(b.dataset.tab); history.replaceState(null,"",b.dataset.tab==="calc"?location.pathname:"#"+b.dataset.tab); window.scrollTo(0,0); }));
+  showTab(["act","rules"].includes(location.hash.slice(1))?location.hash.slice(1):"calc");
 }
 init();
 </script>
